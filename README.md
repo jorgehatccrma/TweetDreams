@@ -11,7 +11,7 @@ Requirements
 
 You'll need a machine with the following:
 
-1. Python (only 2.6 or 2.7 have been tested)
+1. Python (only 2.6 or 2.7 have been tested), with the `virtualenv` module installed
 2. Java
 3. Chuck
 

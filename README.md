@@ -6,6 +6,18 @@ Real-time sonification and visualization of Twitter data.
 More information at: https://ccrma.stanford.edu/groups/tweetdreams/
 
 
+Requirements
+------------
+
+You'll need a machine with the following:
+
+1. Python (only 2.6 or 2.7 have been tested)
+2. Java
+3. Chuck
+
+**Note:** the code should be cross-platform, but it has only been tested in OS X (10.5 and 10.6)
+
+
 Installation
 ------------
 
@@ -17,6 +29,8 @@ or download it from  https://github.com/jorgehatccrma/TweetDreams/zipball/master
 
 
 **2) Initialize**
+
+Go to the root folder of the downloaded code and type
 
 	> source init.sh
 	

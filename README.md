@@ -11,11 +11,13 @@ Installation
 
 1. get the code:
 	> git clone git@github.com:jorgehatccrma/TweetDreams.git
+	
 or download it from  https://github.com/jorgehatccrma/TweetDreams/zipball/master
 
 
 2. Initialize 
 	> source init.sh
+	
 (the containing folder will become a virtual python environment and all the dependencies will be downloaded and installed in this isolated virtual environment)
 
 3. Run it (TODO)

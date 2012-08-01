@@ -18,10 +18,11 @@ source ./bin/activate
 echo 'done!'
 
 echo 'Installing python server dependencies ...'
-python python/install.py python/osc_dependencies
+python src/python/install.py src/python/osc_dependencies
 echo 'done!'
 
+echo ''
 echo '**** READ THIS ****'
 echo 'You might see some error saying "RuntimeWarning: Parent module '\''numpy.distutils'\'
-echo 'not found while handling absolute import". This seems to be a bug when installing NumPy'
-echo 'using easy_install, but the code actually works.'
+echo 'not found while handling absolute import". This seems to be a bug when'
+echo 'installing NumPy using easy_install, but the code actually works.'

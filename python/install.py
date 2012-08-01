@@ -17,6 +17,7 @@ from subprocess import call
 import os
 import tarfile
 
+dependencies_directory = 'osc_dependencies'
 
 class NoVirtualenv(Exception):
   """
@@ -91,7 +92,7 @@ def compileAndInstallLiblo():
   
   # uncompress the source code and cd into the directory
   cwd = os.getcwd()
-  theTarFile = os.path.join(cwd, "liblo-0.26.tar.gz")
+  theTarFile = os.path.join(cwd, dependencies_directory, "liblo-0.26.tar.gz")
   tfile = tarfile.open(theTarFile)
   tfile.extractall(cwd)
 
@@ -123,7 +124,7 @@ def installPyliblo():
     # uncompress the source code and cd into the directory
     cwd = os.getcwd()
     
-    theTarFile = os.path.join(cwd, "pyliblo-0.8.1.gz")
+    theTarFile = os.path.join(cwd, dependencies_directory, "pyliblo-0.8.1.gz")
     tfile = tarfile.open(theTarFile)
     tfile.extractall(cwd)
     
@@ -181,6 +182,11 @@ if __name__ == '__main__':
   """
   Entry point to the installation script.
   """
+  
+  if len(sys.argv) > 1:
+    dependencies_directory = sys.argv[1]
+  
+  
   try:
     checkVirtualenv()
     installDependencies()

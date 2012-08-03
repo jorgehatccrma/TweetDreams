@@ -47,6 +47,7 @@ def searchTweets(username, password):
       # terms = set(['TEDxSV','#TEDxSV','social','innovation','numbers','art','music'])
       # terms = set(['makerfaire','#makerfaire','make','music','technology','participate'])
       terms = set(['EncounterData', '#EncounterData', 'data','numbers','music','visualization','play'])
+      print "Starting connection ..."
       ts = tweetstream.FilterStream(username, password, track=terms)
       with ts as stream:
         if stream:

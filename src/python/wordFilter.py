@@ -1,8 +1,12 @@
 # Class to replace (offensive) words with '*'
 
 import re
+import sys
+import os
 
-offensive_words = open('offensive_words.txt', 'r').read().split()
+#print "DEBUG", sys.prefix
+
+offensive_words = open(os.path.join(sys.prefix,'src','python','offensive_words.txt'), 'r').read().split()
 
 def printWords():
   for w in offensive_words:

@@ -6,7 +6,7 @@ import os
 
 #print "DEBUG", sys.prefix
 
-offensive_words = open(os.path.join(sys.prefix,'src','python','offensive_words.txt'), 'r').read().split()
+offensive_words = open(os.path.join(sys.prefix,'offensive_words.txt'), 'r').read().split()
 
 def printWords():
   for w in offensive_words:

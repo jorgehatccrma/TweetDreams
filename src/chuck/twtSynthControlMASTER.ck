@@ -29,7 +29,7 @@ clients.cap() => int gNumClients;
 //"localhost" => string proc_client;                // address ofcomputer running processing
 //"localhost" => string pyth_server;                // address of computer running python
 //"10.10.10.50" => string proc_client;                // address ofcomputer running processing
-"192.168.176.21" => string proc_client;                // address ofcomputer running processing
+"192.168.181.194" => string proc_client;                // address ofcomputer running processing
 "localhost" => string pyth_server;                // address of computer running python
 
 //if( me.args() > 1 )

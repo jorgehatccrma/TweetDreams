@@ -9,7 +9,7 @@
 trap 'kill $(jobs -p)' EXIT
 
 echo "launching python server ..."
-cd "python"
+cd "src/python"
 pythonSrvr="./twt.py"
 #pythonSrvr="./launch.sh"
 $pythonSrvr &

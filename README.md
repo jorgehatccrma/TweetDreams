@@ -46,7 +46,7 @@ can also run in different machines (or any combination).
 The only change required to run TweetDreams in different machine configurations is to specify the 
 ip addresses of the involved machines.
 
-(To Do: explain where to change them)
+(**To Do:** explain where to change them)
 
 **4) Run it** 
 (all these instructions assume you are in the root folder of the virtualenv)
@@ -57,11 +57,11 @@ Python server alone:
 	
 Chuck server and client alone:
 
-(To Do)
+(**To Do**)
 
 Java visualizer:
 
-(To Do)
+(**To Do**)
 
 
 

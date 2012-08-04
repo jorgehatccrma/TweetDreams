@@ -3,6 +3,11 @@ import sys
 import optparse
 import subprocess
 
+
+SUCCESS_EXIT_CODE = 0
+ERROR_EXIT_CODE = 1
+
+
 def getSearchTerms(file_path):
   if not os.path.isabs(file_path):
     file_path = os.path.join(sys.prefix, file_path)
@@ -46,6 +51,10 @@ def optionParser():
                         action="store_false", dest="run_chuck", 
                         default=True, 
                         help="Don't run the (chuck) sound server")
+  flags_opts.add_option('-f', '--fake-tweets', 
+                        action="store_true", dest="use_fake_tweets",
+                        default=False,
+                        help="(Use only for development!) this will fake tweets to test the sound server")
   
   flags_opts.add_option('-V', '--run-visualizer', 
                         action="store_true", dest="run_java", 
@@ -73,6 +82,57 @@ def optionParser():
   
   return parser
 
+def startChuckServer(options, pwd):
+  os.chdir(os.path.join(pwd, 'src', 'chuck'))
+  if False: # this was the old way, but is too obscure
+    command = [os.path.join(os.getcwd(), 'twtChuckServer.sh')]
+    if options.use_fake_tweets:
+      command.append('-t')
+  else:
+    command = ['chuck']
+    terms_as_chuck_args = ":".join(options.terms)
+    if len(terms_as_chuck_args): terms_as_chuck_args = ":" + terms_as_chuck_args
+    command.append('--bufsize2048')
+    command.append('--srate44100')
+    command.append('twtNodeSynth3.ck')
+    command.append('twtSynthControlLOCAL3.ck')
+    command.append("twtSynthControlMASTER.ck:%s:%s:%s%s" % (options.python_ip, options.java_ip, options.local_word, terms_as_chuck_args) )
+    if options.use_fake_tweets:
+      command.append('twtTest5.ck')
+    print command
+  sys.stdout.write("Starting sound server ... ")
+  try:
+    p = subprocess.Popen(command)
+    sys.stdout.write("[ok]\n")
+  except:
+    sys.stdout.write("[error]\n")
+    p = None
+  finally:
+    os.chdir(pwd)
+    sys.stdout.flush()
+    return p
+  
+  
+def startPythonServer(options, pwd):
+  command = [os.path.join(pwd, 'src', 'python', 'twt.py')]
+  command.append(options.local_word)
+  for term in options.terms: command.append(term)
+  sys.stdout.write("Starting tweets server ... ")
+  try:
+    p = subprocess.Popen(command)
+    sys.stdout.write("[ok]\n")
+  except:
+    sys.stdout.write("[error]\n")
+    p = None
+  finally:
+    os.chdir(pwd)
+    sys.stdout.flush()
+    return p
+  
+  
+def startJavaApp(options, pwd):
+  pass
+
         
 def main(argv=None):
   # parse arguments
@@ -86,11 +146,8 @@ def main(argv=None):
     print >>sys.stderr, "for help use --help (-h)"
     return 2
   
-  # print "local word: %s" % (options.local_word)
-  
-  # get the search terms
-  terms = getSearchTerms(options.words_file)
-  # print terms
+  # get the search terms and save them in the options object
+  options.terms = getSearchTerms(options.words_file)
       
   # run the different processes
   pwd = os.getcwd()
@@ -100,27 +157,21 @@ def main(argv=None):
   if options.run_java:
     print "Running visualizer ..."
     # TODO: implement this
+    startJavaApp(options, pwd)
   else:
     print "Visualizer is running on '%s'" % (options.java_ip)
 
   # sound server (chuck app)
   if options.run_chuck:
-    print "Running sound server ..."
-    os.chdir(os.path.join(pwd, 'src', 'chuck'))
-    command = [os.path.join(os.getcwd(), 'twtChuckServer.sh')]
-    p = subprocess.Popen(command)
+    p = startChuckServer(options, pwd)
+    if not p: return ERROR_EXIT_CODE
     pids.add(p.pid)
-    os.chdir(pwd)
   else:
     print "Sound server is running on'%s'" % (options.chuck_ip)
 
   # tweet server (python app)
   if options.run_python:
-    print "Running tweet server ..."
-    command = [os.path.join(pwd, 'src', 'python', 'twt.py')]
-    command.append(options.local_word)
-    for term in terms: command.append(term)
-    p = subprocess.Popen(command)
+    p = startPythonServer(options, pwd)
     pids.add(p.pid)
   else:
     print "Tweet server is running on'%s'" % (options.python_ip)
@@ -134,11 +185,14 @@ def main(argv=None):
       print('{p} finished'.format(p=pid))
       pids.remove(pid)
   except KeyboardInterrupt:
-    for pid in pids:
-      os.kill(pid,9)
-    return 0
+    try:
+      for pid in pids:
+        os.kill(pid,9)
+      return SUCCESS_EXIT_CODE
+    except:
+      return ERROR_EXIT_CODE
   except:
-    return 10
+    return ERROR_EXIT_CODE
 
 
 if __name__ == '__main__':

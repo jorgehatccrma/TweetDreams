@@ -10,7 +10,8 @@
 // [ "#modulations", "music", "technology", "participate"  ] @=> string gTerms[];
 // [ "make", "music", "technology", "participate"  ] @=> string gTerms[];
 // [ "social", "innovation", "numbers", "art", "music" ] @=> string gTerms[];
-[ "music", "technology", "data", "participation", "play"  ] @=> string gTerms[];
+// [ "music", "technology", "data", "participation", "play"  ] @=> string gTerms[];
+[ "", "", "", "", "", ""  ] @=> string gTerms[];
 
 gTerms.cap() => int gNumTerms;
 [ 0, 0, 0, 0, 0, 0, 0, 0] @=> int gTermsIn[];  // whether a term is in (1) or out (0)
@@ -26,10 +27,10 @@ gTerms.cap() => int gNumTerms;
 ["localhost" ] @=> string clients[];  // computers running chuck clients
 clients.cap() => int gNumClients;
 
-//"localhost" => string proc_client;                // address ofcomputer running processing
+//"localhost" => string proc_client;                // address of computer running processing
 //"localhost" => string pyth_server;                // address of computer running python
-//"10.10.10.50" => string proc_client;                // address ofcomputer running processing
-"192.168.181.194" => string proc_client;                // address ofcomputer running processing
+//"10.10.10.50" => string proc_client;                // address of computer running processing
+"192.168.181.194" => string proc_client;                // address of computer running processing
 "localhost" => string pyth_server;                // address of computer running python
 
 //if( me.args() > 1 )
@@ -37,8 +38,20 @@ clients.cap() => int gNumClients;
 //    me.arg(0) => pyth_server;
 //    me.arg(1) => proc_client;
 //}
+
+
+for(int i; i < me.args(); i++)
+{
+//	<<< "argument #", i, " = ", me.arg(i) >>>;
+	if (i==0) me.arg(i) => pyth_server;
+	if (i==1) me.arg(i) => proc_client;
+	if (i==2) me.arg(i) => gKeyword;
+	if (i>=3 & i<gNumTerms+3) me.arg(i) => gTerms[i-3];
+}
+
 <<<"twtSynthControlMASTER: python computer address: ", pyth_server >>>;
 <<<"twtSynthControlMASTER: proc computer address: ", proc_client >>>;
+
 
 // ports: 
 8888 => int pyth_port;  // messages to python

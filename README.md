@@ -65,7 +65,7 @@ know the IP addresses where the others are running.
 
 4) Run it
 ---------
-To run *TweetDreams*, use the `startDreaming.py` script from the root folder:
+To run *TweetDreams*, run the `startDreaming.py` script from the root folder:
 
 	> python startDreaming.py -l '#YourHashTag' -j 192.168.1.2
 

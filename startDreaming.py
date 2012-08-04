@@ -161,6 +161,13 @@ def main(argv=None):
   else:
     print "Visualizer is running on '%s'" % (options.java_ip)
 
+  # tweet server (python app)
+  if options.run_python:
+    p = startPythonServer(options, pwd)
+    pids.add(p.pid)
+  else:
+    print "Tweet server is running on'%s'" % (options.python_ip)
+
   # sound server (chuck app)
   if options.run_chuck:
     p = startChuckServer(options, pwd)
@@ -168,13 +175,6 @@ def main(argv=None):
     pids.add(p.pid)
   else:
     print "Sound server is running on'%s'" % (options.chuck_ip)
-
-  # tweet server (python app)
-  if options.run_python:
-    p = startPythonServer(options, pwd)
-    pids.add(p.pid)
-  else:
-    print "Tweet server is running on'%s'" % (options.python_ip)
 
 
   

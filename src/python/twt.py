@@ -157,7 +157,7 @@ def parseTweet(tweet):
 
 
 def waitSomeTime():  
-  time.sleep(1)
+  time.sleep(10)
 
 
 def main():
@@ -174,6 +174,7 @@ def main():
   common.general_dispatcher.start()
   common.keyword_dispatcher.start()
     
+  # dramatic pause!
   waitSomeTime()
 
   # start initial tweets

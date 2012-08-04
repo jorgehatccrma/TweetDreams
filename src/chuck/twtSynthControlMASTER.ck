@@ -33,13 +33,7 @@ clients.cap() => int gNumClients;
 "192.168.181.194" => string proc_client;                // address of computer running processing
 "localhost" => string pyth_server;                // address of computer running python
 
-//if( me.args() > 1 )
-//{   // command line arguments used to give ip addresses of other computers
-//    me.arg(0) => pyth_server;
-//    me.arg(1) => proc_client;
-//}
-
-
+// read arguments and set python and processing IPs as well as the local and global search terms
 for(int i; i < me.args(); i++)
 {
 //	<<< "argument #", i, " = ", me.arg(i) >>>;

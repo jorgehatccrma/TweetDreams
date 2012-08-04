@@ -1,5 +1,5 @@
-__TweetDreams__
-===============
+*TweetDreams*
+=============
 
 Real-time sonification and visualization of Twitter data.
 
@@ -29,8 +29,8 @@ Installation / Set Up / Perform
 or download it from  https://github.com/jorgehatccrma/TweetDreams/zipball/master
 
 
-2) Initialize
--------------
+2) Initialize the Virtual Environment
+-------------------------------------
 
 Go to the root folder of the downloaded code and type
 
@@ -46,7 +46,7 @@ downloaded and installed in this isolated virtual environment)
 In a performance/installation, is possible to run all three parts of in the same machine, but they 
 can also run in different machines (or any combination).
 
-The only change required to run __TweetDreams__ in different machine configurations is to specify the 
+The only change required to run *TweetDreams* in different machine configurations is to specify the 
 ip addresses of the involved machines.
 
 **Local Term:** this is the term, usually a __hash-tag__ (e.g. #TweetDreams), that will be treated with 
@@ -59,13 +59,13 @@ This term is specified as an argument passed to the launch script (see next sect
 To change them, edit the `search_terms.txt` file in the root folder. Is also possible to specify a 
 different file (see next section).
 
-**IP addresses:** If different parts of __TweetDreams__ are run in different machines, each one needs to 
+**IP addresses:** If different parts of *TweetDreams* are run in different machines, each one needs to 
 know the IP addresses where the others are running.
 
 
 4) Run it
 ---------
-To run __TweetDreams__, use the `startDreaming.py` script from the root folder:
+To run *TweetDreams*, use the `startDreaming.py` script from the root folder:
 
 	> python startDreaming.py -l '#YourHashTag' -j 192.168.1.2
 

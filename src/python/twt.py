@@ -17,10 +17,12 @@ import re
 from collections import deque
 
 
-# Singleton class to hold common data (used for inter-thread communication)
+# Singleton class to hold common data (hack used for inter-thread communication)
 common = common.CommonData()
+
 # Handles OSC communication
 osc = oscManager.OSCManager()
+
 # To delay the tweets and send them one at a time (random wait between 0.5 and 1.5 seconds)
 common.general_dispatcher = dispatcher.Dispatcher("general dispatcher", osc, common, common.newTweetsQueue, 0.5, 1.5)
 common.keyword_dispatcher = dispatcher.Dispatcher("keyword dispatcher", osc, common, common.keywordTweetsQueue)
@@ -36,17 +38,20 @@ url_pattern = re.compile('(https?://)(www\.)?([a-zA-Z0-9_%\.]*)([a-zA-Z]{2})?((/
 # Different methods to consume the stream of tweets
 #####################################################
 # only tweets containing at least one of the provided terms
-def searchTweets(username, password):
+def searchTweets(username, password, terms):
   global common
   while True:
-    print "Start searching"
     common.showSearchTerms()
     try:
-      terms = common.keywords.union(common.search_terms.union(common.exclusion_terms))
+      
+      # This was an old hack, but I don't think we use it anymore
+      #terms = common.keywords.union(common.search_terms.union(common.exclusion_terms))
+      
       # terms = set(['tweetdreams', '#tweetdreams', 'music', 'technology', 'participate'])
       # terms = set(['TEDxSV','#TEDxSV','social','innovation','numbers','art','music'])
       # terms = set(['makerfaire','#makerfaire','make','music','technology','participate'])
-      terms = set(['EncounterData', '#EncounterData', 'data','numbers','music','visualization','play'])
+      # terms = set(['EncounterData', '#EncounterData', 'data','numbers','music','visualization','play'])
+      
       print "Starting connection ..."
       ts = tweetstream.FilterStream(username, password, track=terms)
       with ts as stream:
@@ -101,7 +106,8 @@ def printTweet(tweet):
 # handle an incomming tweet
 def parseTweet(tweet):  
   global url_patter, common
-  #print "."
+  # sys.stdout.write('.')
+  # sys.stdout.flush()
   
   # ignore retweeted messages
   if tweet.has_key('retweeted'):
@@ -116,7 +122,7 @@ def parseTweet(tweet):
     else:
       tweet['text'] = "anonymous: " + tweet['text']
     
-    # For some reason, sometimes we get tweets without any relevant word. 
+    # For some reason, sometimes we get tweets without any relevant word (why?). 
     # We need to check for that case. Also, we need to distinguish "local" tweets from "world" 
     # tweets
     irrelevant = True
@@ -139,7 +145,7 @@ def parseTweet(tweet):
     else:
       common.newTweetsQueue.append(tweet)
 
-    #printTweet(tweet)
+    # printTweet(tweet)
 
     #print "Number of trees:", len(common.trees)
     #for tree in common.trees:
@@ -150,36 +156,8 @@ def parseTweet(tweet):
 #####################################################
 
 
-def waitForTheRest():
-  global common
-  
-  args = sys.argv
-  app_name = args.pop(0)
-  #print "App name: ", app_name
-
-  common.waitingForChuck = False
-  common.waitingForProcessing = False
-#  common.waitingForChuck = True
-#  common.waitingForProcessing = True
-  
-  for arg in args:
-    if arg == "-c":
-      print "Waiting for Chuck registration"
-      common.waitingForChuck = True
-    elif arg == "-p":
-      print "Waiting for Processing registration"
-      common.waitingForProcessing = True
-    elif arg == "-b":
-      print "Waiting for Chuck and Processing registrations"
-      common.waitingForChuck = True
-      common.waitingForProcessing = True
-    else:
-      print "Unknown argument", arg
-
-  while common.waitingForChuck or common.waitingForProcessing:
-    time.sleep(0.2)
-  
-  time.sleep(10)
+def waitSomeTime():  
+  time.sleep(1)
 
 
 def main():
@@ -195,24 +173,19 @@ def main():
   osc.start()
   common.general_dispatcher.start()
   common.keyword_dispatcher.start()
-  
-  ## Chuck is taking care of this now
-  #for term in common.keywords: 
-  #  oscManager.send_keyword_term(term)
-  #for term in common.search_terms: 
-  #  oscManager.send_search_term(term)
-  
-  waitForTheRest()
+    
+  waitSomeTime()
 
   # start initial tweets
   common.initial_tweets.start()  
   
   # Start the streaming  
-  searchTweets(username, password)
+  terms = set(sys.argv[1:])
+  searchTweets(username, password, terms)
   
 def killAll():
   # Remember to stop any Thread you might have running 
-  # (you'll have to implement the 'running' attribute in the Thread)
+  # (you must implement a 'running' attribute in the Thread)
   if osc: osc.running = False
   if common.general_dispatcher: common.general_dispatcher.running = False
   if common.keyword_dispatcher: common.keyword_dispatcher.running = False

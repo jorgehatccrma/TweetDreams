@@ -4,8 +4,6 @@ import re
 import sys
 import os
 
-#print "DEBUG", sys.prefix
-
 offensive_words = open(os.path.join(sys.prefix,'offensive_words.txt'), 'r').read().split()
 
 def printWords():

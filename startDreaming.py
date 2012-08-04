@@ -1,11 +1,8 @@
 import os
 import sys
 import optparse
+import subprocess
 
-class Usage(Exception):
-  def __init__(self, msg):
-    self.msg = msg
-        
 def getSearchTerms(file_path):
   if not os.path.isabs(file_path):
     file_path = os.path.join(sys.prefix, file_path)
@@ -94,14 +91,54 @@ def main(argv=None):
   # get the search terms
   terms = getSearchTerms(options.words_file)
   # print terms
-  
-  
+      
+  # run the different processes
+  pwd = os.getcwd()
+  pids=set()
+
+  # Visualizer (java app)
   if options.run_java:
-    print "Running visualizer on ip '%s'" % (options.java_ip)
+    print "Running visualizer ..."
+    # TODO: implement this
+  else:
+    print "Visualizer is running on '%s'" % (options.java_ip)
+
+  # sound server (chuck app)
   if options.run_chuck:
-    print "Running sound server on ip '%s'" % (options.chuck_ip)
+    print "Running sound server ..."
+    os.chdir(os.path.join(pwd, 'src', 'chuck'))
+    command = [os.path.join(os.getcwd(), 'twtChuckServer.sh')]
+    p = subprocess.Popen(command)
+    pids.add(p.pid)
+    os.chdir(pwd)
+  else:
+    print "Sound server is running on'%s'" % (options.chuck_ip)
+
+  # tweet server (python app)
   if options.run_python:
-    print "Running tweet server on ip '%s'" % (options.python_ip)
+    print "Running tweet server ..."
+    command = [os.path.join(pwd, 'src', 'python', 'twt.py')]
+    command.append(options.local_word)
+    for term in terms: command.append(term)
+    p = subprocess.Popen(command)
+    pids.add(p.pid)
+  else:
+    print "Tweet server is running on'%s'" % (options.python_ip)
+
+
+  
+  # wait for all subprocesses to end
+  try:
+    while pids:
+      pid, retval = os.wait()
+      print('{p} finished'.format(p=pid))
+      pids.remove(pid)
+  except KeyboardInterrupt:
+    for pid in pids:
+      os.kill(pid,9)
+    return 0
+  except:
+    return 10
 
 
 if __name__ == '__main__':

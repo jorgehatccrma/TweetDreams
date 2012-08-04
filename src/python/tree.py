@@ -1,5 +1,5 @@
 # The tree can be implemented easily by abstracting the class Node
-# See the example in the __name__ method
+# See the example at the bottom
 
 class Node(object):
   def __init__(self, tweet, parent = None):

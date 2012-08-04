@@ -38,7 +38,7 @@ Go to the root folder of the downloaded code and type
 downloaded and installed in this isolated virtual environment)
 
 
-**3) Configure for a performance**
+**3) Configuring a performance**
 
 In a performance/installation, is possible to run all three parts of in the same machine, but they 
 can also run in different machines (or any combination).

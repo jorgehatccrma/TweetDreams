@@ -2,10 +2,11 @@ import os
 import sys
 import optparse
 import subprocess
-
+import time
 
 SUCCESS_EXIT_CODE = 0
 ERROR_EXIT_CODE = 1
+ERROR_WRONG_ARGUMENT = 2
 
 
 def getSearchTerms(file_path):
@@ -130,8 +131,78 @@ def startPythonServer(options, pwd):
     return p
   
   
+
+def compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder):
+  jars = [os.curdir]
+  # TODO: instead of specifying the jars by hand, we should read and use all the jars in the folder?
+  jars.append(os.path.join(jarsFolder,'core.jar'))
+  jars.append(os.path.join(jarsFolder,'nexttext.jar'))
+  jars.append(os.path.join(jarsFolder,'oscP5.jar'))
+  jars.append(os.path.join(jarsFolder,'physics.jar'))
+  jars.append(os.path.join(jarsFolder,'shapetween.jar'))
+  jars.append(os.path.join(openGLFolder,'opengl.jar'))
+  jars.append(os.path.join(openGLFolder,'jogl.jar'))
+  jars.append(os.path.join(openGLFolder,'gluegen-rt.jar'))
+
+  # compile the java app
+  # TODO: we shouldn't do this every time, but since is fast, is not too bad
+  compileCommand = ['javac']
+  compileCommand.append('-g')
+  # compileCommand.append('-verbose')
+  compileCommand.append('-classpath')
+  compileCommand.append(':'.join(jars))
+
+  sources = []
+  sources.append('Twt.java')
+
+  for source in sources:
+    compileCommand.append(source)
+
+  os.chdir(srcFolder)
+  try:
+    sys.stdout.write('Compiling java app ...')
+    sys.stdout.flush()
+    subprocess.call(compileCommand)
+    sys.stdout.write('[done]')
+    sys.stdout.flush()
+  except:
+    raise Exception, "Couldn't compile the Java App"
+  finally:
+    os.chdir(pwd)
+  
+  return jars
+
 def startJavaApp(options, pwd):
-  pass
+
+  jarsFolder = os.path.join(pwd, 'src', 'java', 'dependencies')
+  openGLFolder = os.path.join(jarsFolder, 'opengl')
+  srcFolder = os.path.join(pwd, 'src', 'java', 'src')
+
+  try:
+    jars = compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder)
+  except:
+    raise
+  
+  # generate the run command
+  command = ['java']
+  command.append('-Djava.library.path=%s' % (openGLFolder))
+  command.append('-classpath')
+  command.append(':'.join(jars))
+  command.append('Twt')
+    
+  sys.stdout.write("Starting visualizer app ... ")
+  os.chdir(srcFolder)
+  try:
+    p = subprocess.Popen(command)
+    sys.stdout.write("[ok]\n")
+  except:
+    sys.stdout.write("[error]\n")
+    p = None
+  finally:
+    os.chdir(pwd)
+    sys.stdout.flush()
+    return p
+
 
         
 def main(argv=None):
@@ -144,7 +215,7 @@ def main(argv=None):
     # print options
   except:
     print >>sys.stderr, "for help use --help (-h)"
-    return 2
+    return ERROR_WRONG_ARGUMENT
   
   # get the search terms and save them in the options object
   options.terms = getSearchTerms(options.words_file)
@@ -156,8 +227,12 @@ def main(argv=None):
   # Visualizer (java app)
   if options.run_java:
     print "Running visualizer ..."
-    # TODO: implement this
-    startJavaApp(options, pwd)
+    try:
+      startJavaApp(options, pwd)
+      # FixMe: hack! (the java app takes a few seconds to be ready, so we'll wait a bit)
+      time.sleep(5)
+    except:
+      return ERROR_EXIT_CODE
   else:
     print "Visualizer is running on '%s'" % (options.java_ip)
 

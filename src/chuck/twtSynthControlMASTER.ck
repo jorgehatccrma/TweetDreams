@@ -36,15 +36,15 @@ clients.cap() => int gNumClients;
 // read arguments and set python and processing IPs as well as the local and global search terms
 for(int i; i < me.args(); i++)
 {
-//	<<< "argument #", i, " = ", me.arg(i) >>>;
+//	<<< "[sound server] argument #", i, " = ", me.arg(i) >>>;
 	if (i==0) me.arg(i) => pyth_server;
 	if (i==1) me.arg(i) => proc_client;
 	if (i==2) me.arg(i) => gKeyword;
 	if (i>=3 & i<gNumTerms+3) me.arg(i) => gTerms[i-3];
 }
 
-<<<"twtSynthControlMASTER: python computer address: ", pyth_server >>>;
-<<<"twtSynthControlMASTER: proc computer address: ", proc_client >>>;
+<<<"[sound server] twtSynthControlMASTER: python computer address: ", pyth_server >>>;
+<<<"[sound server] twtSynthControlMASTER: proc computer address: ", proc_client >>>;
 
 
 // ports: 
@@ -72,9 +72,9 @@ osc_pyth_out.setHost(pyth_server, pyth_port);
 MidiIn midiIn;
 MidiMsg msg;
 if( !midiIn.open( device ) )
-    <<< "WARNING no MIDI device found with number ", device>>>;
+    <<< "[sound server] WARNING no MIDI device found with number ", device>>>;
 else
-    <<< "MIDI device:", midiIn.num(), " -> ", midiIn.name() >>>;
+    <<< "[sound server] MIDI device:", midiIn.num(), " -> ", midiIn.name() >>>;
 
 666 => int g_prev_new_mel;   // keep track of the most recent new tree melody to avoid repeats
 
@@ -252,27 +252,27 @@ sendQueueTimes(1);
 sendThreshold();
 
 // make time 
-<<< "twtSynthControlMaster: Here we go..........", "">>>;
+<<< "[sound server] twtSynthControlMaster: Here we go..........", "">>>;
 while( 1 )
 {
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 1 Minute! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 1 Minute! ", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2 Minutes! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2 Minutes! ", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 3 Minutes! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 3 Minutes! ", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 4 Minutes! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 4 Minutes! ", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 5 Minutes! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 5 Minutes! ", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 6 Minutes! Let's End This!!!!!!!!!!!!", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 6 Minutes! Let's End This!!!!!!!!!!!!", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 7 Minute! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 7 Minute! ", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 8 Minutes! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 8 Minutes! ", "">>>;
     1::minute => now;
-    <<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 9 Minutes!  Gettin pretty late! ", "">>>;
+    <<< "[sound server] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 9 Minutes!  Gettin pretty late! ", "">>>;
 }
 
 
@@ -359,7 +359,7 @@ fun void newNodeListener()
             newNodeEvent.getInt() => int isLoc;
             
             if( gMasterDebug )
-                <<< "MASTER: newNode message received. ID:", nodeID, " neighbor:", neighborID, " dist:", distance >>>;
+                <<< "[sound server] MASTER: newNode message received. ID:", nodeID, " neighbor:", neighborID, " dist:", distance >>>;
             
             // if this node has never been made before...it may have been instantiated if a trigger arrived before this message
             if( synthArray[nodeID] == NULL )
@@ -369,7 +369,7 @@ fun void newNodeListener()
             }
             
             //if( isLoc )
-            //    <<< "LOCAL tweet!", "">>>;
+            //    <<< "[sound server] LOCAL tweet!", "">>>;
             
             // if this is the first node in a tree...
             if ( neighborID == "0")
@@ -411,7 +411,7 @@ fun void newNodeListener()
                 gNextTreeNum++;                       
 
  //               if( gMasterDebug )
-                    <<< "new tree: wav:", gWavNames[tempWavNum], "mel:", tempSeqNum, "time:", gTimeNum, "mode:", gModeNum >>>;
+                    <<< "[sound server] new tree: wav:", gWavNames[tempWavNum], "mel:", tempSeqNum, "time:", gTimeNum, "mode:", gModeNum >>>;
             }
             // subsequent nodes in a tree....
             else                                         
@@ -476,13 +476,13 @@ fun void triggerNodeListener()
             
             if( gMasterDebug ) 
                    
-                <<< "MASTER: triggerNode message received. echoID:", echoID, " nodeID:", nodeID, " time:", delayMsec, " hopLevel:", hopLevel  >>>;
+                <<< "[sound server] MASTER: triggerNode message received. echoID:", echoID, " nodeID:", nodeID, " time:", delayMsec, " hopLevel:", hopLevel  >>>;
         
             // Error checking: if we somehow missed this new node message
             if( synthArray[nodeID] == NULL )
             {
                 if( gMasterDebug )
-                    <<< "MASTER ERROR: trigger message for non-existent node ","" >>>;    // DEBUG
+                    <<< "[sound server] MASTER ERROR: trigger message for non-existent node ","" >>>;    // DEBUG
                 int seq[];
                 twtNodeData a @=> synthArray[ nodeID ];
                 Std.rand2( gMinWavNum, gMaxWavNum ) => int tempWavNum;            
@@ -540,7 +540,7 @@ fun void sendTrigger( string nodeID, int echoID, float delayMsec, int hopLevel )
     triggerTime => now;    // wait to send message
 
     if( gMasterDebug )
-        <<< "MASTER: sending trigger for node ", nodeID, "echoID", echoID, "hop" ,hopLevel >>>;    
+        <<< "[sound server] MASTER: sending trigger for node ", nodeID, "echoID", echoID, "hop" ,hopLevel >>>;    
     
     // send trigger message to processing:
     osc_proc_out.startMsg( "/twt/triggerNode", "i s f i");
@@ -600,8 +600,8 @@ fun void incdecWavs( int incdec, int cyc )
             gNumWavFiles-1 => gMinWavNum;   // set max
     }
 
-    <<< "//////////////////////// wavs ", gMinWavNum, " to ", gMaxWavNum >>>;
-    //<<< "//////////////////////// wavs ", gMinWavNum, " to ", gMaxWavNum, gWavNames[gMinWavNum], gWavNames[gMinWavNum+1], gWavNames[gMaxWavNum]  >>>;
+    <<< "[sound server] //////////////////////// wavs ", gMinWavNum, " to ", gMaxWavNum >>>;
+    //<<< "[sound server] //////////////////////// wavs ", gMinWavNum, " to ", gMaxWavNum, gWavNames[gMinWavNum], gWavNames[gMinWavNum+1], gWavNames[gMaxWavNum]  >>>;
 }
 
 // inc/decrement the range of possible melody sequences for the next new tree
@@ -646,7 +646,7 @@ fun void incdecSeqs( int incdec, int cyc )
             gNumSeqs-1 => gMinSeqNum;   // set max
     }
     
-    <<< "//////////////////////// melody ", gMinSeqNum, " to ", gMaxSeqNum >>>;
+    <<< "[sound server] //////////////////////// melody ", gMinSeqNum, " to ", gMaxSeqNum >>>;
 }
 
 
@@ -661,7 +661,7 @@ fun void keyboard()
     
     // open keyboard
     if( !hiKbd.openKeyboard( device ) ) me.exit();
-    <<< "keyboard '", hiKbd.name(), "' ready" >>>;
+    <<< "[sound server] keyboard '", hiKbd.name(), "' ready" >>>;
 
     while (true)
     {
@@ -692,24 +692,24 @@ fun void keyboard()
                 else if( msgKbd.which == 35) {
                     1 +=> gTimeNum;
                     if( gTimeNum > gNumTimes-1 ) gNumTimes-1 => gTimeNum;
-                    <<< "//////////////////////// timing ", gTimeNum>>>;
+                    <<< "[sound server] //////////////////////// timing ", gTimeNum>>>;
                 }
                 else if( msgKbd.which == 34) {
                     1 -=> gTimeNum;
                     if( gTimeNum < 0 ) 0 => gTimeNum;
-                    <<< "//////////////////////// timing ", gTimeNum>>>;
+                    <<< "[sound server] //////////////////////// timing ", gTimeNum>>>;
                 }
                     
                 // keys '7' and '8': mode
                 else if( msgKbd.which == 37) {
                     1 +=> gModeNum;
                     if( gModeNum > gNumModes-1 ) gNumModes-1 => gModeNum;                       
-                    <<< "//////////////////////// mode ", gModeNum>>>;
+                    <<< "[sound server] //////////////////////// mode ", gModeNum>>>;
                 }
                 else if( msgKbd.which == 36) {
                     1 -=> gModeNum;
                     if( gModeNum < 0 ) 0 => gModeNum;
-                    <<< "//////////////////////// mode ", gModeNum>>>;
+                    <<< "[sound server] //////////////////////// mode ", gModeNum>>>;
                 }
                 
                 // keys '9' and '0': dry level
@@ -769,12 +769,12 @@ fun void keyboard()
  else if( msgKbd.which == 54) {      // ','
      0 => gPlayLocal;
      setSynthStatics();
-     <<< "//////////////////////// playLocal ", gPlayLocal>>>;
+     <<< "[sound server] //////////////////////// playLocal ", gPlayLocal>>>;
  }
  else if( msgKbd.which == 55) {      // '.'
      1 => gPlayLocal;
      setSynthStatics();
-     <<< "//////////////////////// playLocal ", gPlayLocal>>>;
+     <<< "[sound server] //////////////////////// playLocal ", gPlayLocal>>>;
  }
  */
                 // adding removing search terms: zx-not c-vbnm
@@ -801,7 +801,7 @@ fun void keyboard()
                 }
 
                 else {
-                    //<<< "unknown key ", msgKbd.which >>>;
+                    //<<< "[sound server] unknown key ", msgKbd.which >>>;
                 }
             }
         }
@@ -821,13 +821,13 @@ fun void midiCtl()
             // THE SLIDERS ------------------------------------------------
             if( msg.data1 == 176 && msg.data2 == 13 )   // slider 9
             {
-                //<<< "slider 9 = ", msg.data3 >>>;
+                //<<< "[sound server] slider 9 = ", msg.data3 >>>;
                 
                 // change threshold
                 msg.data3 / 127. => gTreeThresh;
                 osc_pyth_out.startMsg("/twt/treeThresh", "f");
                 gTreeThresh => osc_pyth_out.addFloat;
-                //<<< "//////////////////////// new tree thresh ", gTreeThresh >>>;
+                //<<< "[sound server] //////////////////////// new tree thresh ", gTreeThresh >>>;
             }
             else if( msg.data1 == 176 && msg.data2 == 12 ) // slider 8
             {
@@ -865,7 +865,7 @@ fun void midiCtl()
             }
             else
             {
-                //<<< "unassigned midi message: ", msg.data1, msg.data2, msg.data3 >>>;
+                //<<< "[sound server] unassigned midi message: ", msg.data1, msg.data2, msg.data3 >>>;
             }
             
         }
@@ -887,7 +887,7 @@ fun void sendTreeThresh( int upDown )
         
     osc_pyth_out.startMsg("/twt/treeThresh", "f");
     gTreeThresh => osc_pyth_out.addFloat;
-    <<< "//////////////////////// new tree thresh ", gTreeThresh >>>;
+    <<< "[sound server] //////////////////////// new tree thresh ", gTreeThresh >>>;
 }
 
 // change master dry level and send messages
@@ -908,7 +908,7 @@ fun void changeDry( int upDown )
         gDryLvl => osc_out.addFloat;  
     }
     
-    <<< "//////////////////////// dry lvl ", gDryLvl>>>;
+    <<< "[sound server] //////////////////////// dry lvl ", gDryLvl>>>;
 }
 
 // send the latest threshold to python
@@ -928,14 +928,14 @@ fun void sendQueueTimes( int glob)
         gMinQueueTime => osc_pyth_out.addFloat;
         gMaxQueueTime => osc_pyth_out.addFloat;
         1 => osc_pyth_out.addInt;
-        //<<< "//////////////////////// GLOBAL que times ", gMinQueueTime, gMaxQueueTime >>>;
+        //<<< "[sound server] //////////////////////// GLOBAL que times ", gMinQueueTime, gMaxQueueTime >>>;
     }
     else {
         osc_pyth_out.startMsg("/twt/dequeueTime", "f f i");
         gMinLocQueueTime => osc_pyth_out.addFloat;
         gMaxLocQueueTime => osc_pyth_out.addFloat;
         0 => osc_pyth_out.addInt;
-        //<<< "//////////////////////// LOCAL que times ", gMinLocQueueTime, gMaxLocQueueTime >>>;        
+        //<<< "[sound server] //////////////////////// LOCAL que times ", gMinLocQueueTime, gMaxLocQueueTime >>>;        
     }
 }
 
@@ -1057,7 +1057,7 @@ fun void addRemove( int termIdx )
         osc_proc_out.startMsg("/twt/addTerm", "s");
         gTerms[ termIdx ] => osc_proc_out.addString;
 
-        <<< "++++++++++++++++++++++++ adding term:", gTerms[ termIdx ], "+++" >>>;
+        <<< "[sound server] ++++++++++++++++++++++++ adding term:", gTerms[ termIdx ], "+++" >>>;
     }
     else {
         // send to python
@@ -1068,7 +1068,7 @@ fun void addRemove( int termIdx )
         osc_proc_out.startMsg("/twt/removeTerm", "s");
         gTerms[ termIdx ] => osc_proc_out.addString;
 
-        <<< "------------------------ removing term:", gTerms[ termIdx ], "---" >>>; 
+        <<< "[sound server] ------------------------ removing term:", gTerms[ termIdx ], "---" >>>; 
     }
     
 }
@@ -1130,7 +1130,7 @@ fun void setSeqForNewNode( string nodeID, string neighborID)
     if ( (max - min) > 10 )             // if the spread is too great, compress!
     {         
         if( gMasterDebug )
-            <<< "compressing sequence! ", max, min >>>;   // DEBUG
+            <<< "[sound server] compressing sequence! ", max, min >>>;   // DEBUG
         for( 0 => int i; i < numSS; i++ ) 
         {
             if( dummy[i] != nonote) 
@@ -1156,7 +1156,7 @@ fun void setSeqForNewNode( string nodeID, string neighborID)
     {
         0.5*(max + min) => float mean;
         if( gMasterDebug )
-            <<< "transposing sequence ", max, min, mean >>>;   // DEBUG
+            <<< "[sound server] transposing sequence ", max, min, mean >>>;   // DEBUG
         Math.floor( .5*mean )$int => int xpose;
         for( 0 => int i; i < numSS; i++ )
         {
@@ -1171,7 +1171,7 @@ fun void setSeqForNewNode( string nodeID, string neighborID)
     if( dummy[0] == nonote )
     {
         if( gMasterDebug )
-            <<< "first note null!","">>>; // TODO: add code here
+            <<< "[sound server] first note null!","">>>; // TODO: add code here
     }
     
     // and set the array

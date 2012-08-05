@@ -88,7 +88,7 @@ public class twtNodeSynth2
     // public methods ---------------------------------------------------
     public void play( int hopLvl, float revs, int seq[], int wav_num, int mode_num, float flt_frq_ratio, float flt_Q, int dcy_ticks, int att_ticks, int note_ticks, float pan_in)
     {
-        //  <<< "playing ", "" >>>;
+        //  <<< "[sound server] playing ", "" >>>;
         
         // set sequence
         for( 0 => int i; i < numSeqSteps; i++ )
@@ -174,7 +174,7 @@ public class twtNodeSynth2
  
         // connect
         if( isConnected ) {
-            <<< "twtNodeSynth2 WARNING: triggering a synth that's already playing! *&*&*&*&*&*&*&*&*&*&*", "" >>>;
+            <<< "[sound server] twtNodeSynth2 WARNING: triggering a synth that's already playing! *&*&*&*&*&*&*&*&*&*&*", "" >>>;
             return;
         }
         
@@ -192,7 +192,7 @@ public class twtNodeSynth2
         // hookup appropriate wavSynth
         wavSynth[wavNum] => gn;
         
-        //<<< "connecting ", wavNames[ wavNum ] >>>;  // DEBUG
+        //<<< "[sound server] connecting ", wavNames[ wavNum ] >>>;  // DEBUG
         // numNotesPlaying++;  do I still need this? - LD 8/18/10
 
         // set level quieter for later hops
@@ -206,7 +206,7 @@ public class twtNodeSynth2
                 Math.pow(2, (midiNote - 60)/12.0 ) => float tempF;
                 masterTune *=> tempF => wavSynth[wavNum].rate;
                 Std.mtof(midiNote) * fltFrqRto * Math.pow(0.7,hopLevel) => tempF;
-                //<<< "filt freq", tempF >>>;   //DEBUG
+                //<<< "[sound server] filt freq", tempF >>>;   //DEBUG
                 if( tempF > 20000. )          // TODO: make this depend on sampling rate
                     20000. => tempF;
                 tempF => flt.freq;  

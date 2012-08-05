@@ -1,3 +1,8 @@
-testerA: this is a first tweet
-testerB: Yoh, testerA!
-testerA: Hey man
+ccrma: Welcome to TweetDreams! - #TweetDreams
+ccrma: TweetDreams makes music from Twitter data - #TweetDreams
+ccrma: You can be part of TweetDreams - #TweetDreams
+ccrma: Tweet with #TweetDreams to play - #TweetDreams
+ccrma: Similar tweets create trees of related melodies - #TweetDreams
+ccrma: Search terms are shown in the upper left - #TweetDreams
+ccrma: What are TweetDreams made of? - #TweetDreams
+ccrma: TweetDreams are made of cheese :-P  #TweetDreams

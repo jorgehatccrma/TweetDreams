@@ -41,18 +41,11 @@ url_pattern = re.compile('(https?://)(www\.)?([a-zA-Z0-9_%\.]*)([a-zA-Z]{2})?((/
 def searchTweets(username, password, terms):
   global common
   while True:
-    common.showSearchTerms()
-    try:
-      
+    try:      
       # This was an old hack, but I don't think we use it anymore
       #terms = common.keywords.union(common.search_terms.union(common.exclusion_terms))
       
-      # terms = set(['tweetdreams', '#tweetdreams', 'music', 'technology', 'participate'])
-      # terms = set(['TEDxSV','#TEDxSV','social','innovation','numbers','art','music'])
-      # terms = set(['makerfaire','#makerfaire','make','music','technology','participate'])
-      # terms = set(['EncounterData', '#EncounterData', 'data','numbers','music','visualization','play'])
-      
-      print "Starting connection ..."
+      common.log("Starting connection ...\n")
       ts = tweetstream.FilterStream(username, password, track=terms)
       with ts as stream:
         if stream:
@@ -61,17 +54,13 @@ def searchTweets(username, password, terms):
             if tweet.has_key('id') and tweet['id'] not in common.receivedTweetIDs:
               common.receivedTweetIDs.add(tweet['id'])
               parseTweet(tweet)
-            #print stream.connected
-            #if common.connection == False:
-            #  break
     except tweetstream.ConnectionError, e:
-        print "Disconnected from twitter. Reason:", e.reason
-        print "It should reconnect automatically"
+        common.log("Disconnected from twitter. Reason: %s\n" % (e.reason))
+        common.log("It should reconnect automatically\n")
     except tweetstream.AuthenticationError, e:
-        print "Disconnected from twitter. ReasonB:", e.reason
-        print "It should reconnect automatically"
-    #print stream.connected
-  print "searching stopped"
+        common.log("Disconnected from twitter. Reason: %s\n" % (e.reason))
+        common.log("It should reconnect automatically\n")
+  common.log("Twitter stream stopped\n")
 
 
 #####################################################
@@ -92,16 +81,16 @@ def searchTweets(username, password, terms):
 def printTweet(tweet):
   global common, url_patter
   if tweet.has_key('text'):
-    print "-"*60
-    print tweet['text']
+    common.log("-"*60+"\n")
+    common.log(tweet['text']+"\n")
     text = tweet['text'].encode('utf-8')
     # remove URLs from tweets
     text = re.sub(url_pattern, '', text)
     if len(common.clients) > 0: return
     if tweet.has_key('user') and tweet['user'].has_key('screen_name'):
-      print "Got tweet from '" + tweet['user']['screen_name'].encode('utf-8') + "' : " + text
+      common.log("Got tweet from '" + tweet['user']['screen_name'].encode('utf-8') + "' : " + text + "\n")
     else:
-      print "Got tweet from <anonymous> : " + text  
+      common.log("Got tweet from <anonymous> : " + text + "\n")
 
 # handle an incomming tweet
 def parseTweet(tweet):  
@@ -147,9 +136,9 @@ def parseTweet(tweet):
 
     # printTweet(tweet)
 
-    #print "Number of trees:", len(common.trees)
+    #common.log("Number of trees:" + len(common.trees) + "\n")
     #for tree in common.trees:
-    #  print "this tree has", tree.numChildren(), "nodes"
+    #  common.log("this tree has" + tree.numChildren() + "nodes\n")
 
 #####################################################
 # End of Utilitary functions
@@ -198,11 +187,12 @@ if __name__ == '__main__':
     main()
   except KeyboardInterrupt:
     common.connection = False
-    print '\nGoodbye!'
+    common.log('\nGoodbye!\n')
   except SystemExit:
-    print "\nQuiting because of SystemExit"
+    common.log("\nQuiting because of SystemExit\n")
   except:
-    print "Unexpected error:", sys.exc_info()[0], sys.exc_info()[1]
+    common.log("Unexpected error: %s %s\n" % (sys.exc_info()[0], sys.exc_info()[1]))
+    traceback.print_exc()
     raise
   finally:
     killAll()

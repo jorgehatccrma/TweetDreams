@@ -9,18 +9,16 @@ class Node(object):
 
   def addChild(self, obj):
     if type(obj) is not Node:
-      print "I was expecting a node!!!"
+      common.log( "I was expecting a node!!!\n" )
       return
     self.children.append(obj)
     obj.parent = self
   
   def display(self, level = 0):
-    print "-"*level + ">", self.tweet
     for c in self.children:
       c.display(level+2)
   
   def traverseUp(self, level = 0):
-    print "-"*level + ">", self.tweet
     if self.parent == None:
       return
     self.parent.traverseUp(level+2)

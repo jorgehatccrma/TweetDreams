@@ -171,6 +171,10 @@ public class Twt extends PApplet{
 		invisible_center.makeFixed();
 		
 	}
+	
+  public static void println(java.lang.String what) {
+	  PApplet.println("[Twt visualizer] " + what);
+	}
 		
 	@Override
 	public void keyPressed() {

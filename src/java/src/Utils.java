@@ -45,6 +45,5 @@ public class Utils {
 							vec.x()*s + vec.y()*c, 
 							0 );
 	}
-
 	
 }

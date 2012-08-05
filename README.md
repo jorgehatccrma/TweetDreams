@@ -78,8 +78,6 @@ There are many other arguments that can be passed to this script. For a complete
 
 
 
-
-
 Authors
 =======
 * Luke Dahl (lukedahl@ccrma.stanford.edu)

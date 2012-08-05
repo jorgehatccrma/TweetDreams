@@ -35,16 +35,16 @@ class Dispatcher(threading.Thread):
 
 
   def run(self):
-    print "Starting ", self.name, "\n"
+    self.common.log("Starting " + self.name + "\n")
     self.running = True
     while self.running:
       #dispatched the next tweet randomizing the inter tweet time
       if len(self.queue) > 0:
         try:
           self.sendNextTweet()
-          #print "tweet forwarded from ", self.name, " queue. Tweet queued:", len(self.queue)
+          #common.log("tweet forwarded from " + self.name + " queue. Tweet queued:" + len(self.queue) + "\n")
         except:
-          print "Error forwarding tweet. Tweet omitted"
+          common.log("Error forwarding tweet: tweet omitted.\n")
       if self.high > 0:
         t = random.uniform(self.low, self.high) # in seconds
         time.sleep(t)
@@ -52,7 +52,7 @@ class Dispatcher(threading.Thread):
   def sendNextTweet(self):
     tweet = self.queue.popleft()
     
-    #print tweet['text']
+    #common.log( tweet['text'] + "\n" )
     
     # replace offensive words with '*'
     tweet['text'] = offensiveFilter.filter(tweet['text'])
@@ -65,7 +65,7 @@ class Dispatcher(threading.Thread):
 
     self.oscMgr.sendNewNode(newTweet[0], newTweet[1], ('s', 's', 'f', 's', 'i'))      
     for msg in triggers:
-      #print "triggering: ", msg[2]
+      #common.log( "triggering: " + msg[2] + "\n" )
       self.oscMgr.triggerNodes(msg[0], msg[1], msg[2], msg[3])
 
 
@@ -79,8 +79,8 @@ def associateTweet(common, node, closest_id, dist, closest_node, local):
       try:
         common.sentNodes.append(closest_node)
       except:
-        print "Unexpected error sending 'newNode':", sys.exc_info()[0]
-        print "OSC newNode message not sent"
+        common.log("Unexpected error sending 'newNode':" + sys.exc_info()[0] + "\n")
+        common.log("OSC newNode message not sent\n")
         traceback.print_exc()
         
       try:
@@ -102,8 +102,8 @@ def associateTweet(common, node, closest_id, dist, closest_node, local):
           hop_level += 1
         return (newTweet, triggers)
       except:
-        print "Unexpected error sending 'triggerNodes':", sys.exc_info()[0]
-        print "OSC triggerNode message not sent"
+        common.log("Unexpected error sending 'triggerNodes':" + sys.exc_info()[0] + "\n")
+        common.log("OSC triggerNode message not sent")
         traceback.print_exc()
         
         
@@ -120,11 +120,10 @@ def getClosestTweet(common, tweet):
     if common.distance_method == "lcs":
       subStrSet = distance.LCSubstr_set(tweet['text'].encode('utf-8'), twt['text'].encode('utf-8'))
       d = distance.totalDistance(subStrSet)
-      #print "Distance between ", tweet['id'], " and ", twt['id'], " is ", d, "\n"
     # using cosine distance 
     elif common.distance_method == "cosine":
       d = cosineDistance.compare(tweet['text'].encode('utf-8'), twt['text'].encode('utf-8'))
-      #print "Distance between ", tweet['id'], " and ", twt['id'], " is ", d, "\n"
+    #common.log( "Distance between " + tweet['id'] + " and " + twt['id'] + " is " + d + "\n" )
 
     if d >= dist:
       closest_node = node
@@ -143,10 +142,10 @@ def getClosestTweet(common, tweet):
   
   if dist > threshold:
     closest_node.addChild(node)
-    #print node.tweet['id'], "is now a child of ", closest_node.tweet['id']
+    #common.log( node.tweet['id'] + "is now a child of " + closest_node.tweet['id'] + "\n" )
     return {'node':node, 'closest_id':closest_id, 'dist':dist, 'closest_node':closest_node}
   else:
     common.trees.add(node)
-    #print node.tweet['id'], " forms a new tree"
+    #common.log( node.tweet['id'] + " forms a new tree\n" )
     return {'node':node, 'closest_id':0, 'dist':0, 'closest_node':None}
   

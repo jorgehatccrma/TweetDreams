@@ -20,7 +20,7 @@ class OSCManager(threading.Thread):
     try:
       self.server = liblo.Server(port)
     except liblo.ServerError, err:
-      print str(err)
+      common.log(str(err) + "\n")
       sys.exit()
       
     # register callback to register/unregister OSC clients (computers that will receive 
@@ -52,7 +52,7 @@ class OSCManager(threading.Thread):
 
 
   def run(self):
-    print "Starting OSC listener\n"
+    common.log("Starting OSC listener\n")
     self.running = True
     while self.running:
       #check for messages every 100 ms
@@ -72,39 +72,29 @@ class OSCManager(threading.Thread):
     msg = liblo.Message("/twt/newNode")
     for a, t in zip(msgArgs, msgTypes):
       msg.add((t, a))
-      #print "argument (%s): %s" % (t, a)
+      #common.log("argument (%s): %s\n" % (t, a))
     for client in self.common.clients:
       try:
         target = liblo.Address(client, port)
       except:
-        print str(err)
-        #sys.exit()
-      #print "/twt/newNode", "(node_id:", msgArgs[0], "closest_id:", msgArgs[1], "distance:", msgArgs[2], "tweet:", msgArgs[3][:20], "...)"
-      #print target, msg
+        common.log(str(err) + "\n")
       liblo.send(target, msg)
 
 
 
 #/twt/triggerNode echo_id, node_id, time, hop_level, [i i f i]      
-# TODO: use and test. node_delay is a map where the node_id is the key 
-#       and the delay is the value (e.g. node_delay = {43:500, 67:4000, 87:2300} )
-# TODO: replace the 1.0 with the actual hop-level (ask Luke about it)
   def triggerNodes(self, port, echo_id, node_delay, hop_level):
     msg = liblo.Message("/twt/triggerNode")
     for key in node_delay:
       value = node_delay[key]
       for a, t in zip((echo_id, key, value, hop_level), ('i', 's', 'f', 'i')):
         msg.add((t, a))
-        #print "argument (%s): %s" % (t, a)
+        #common.log("argument (%s): %s\n" % (t, a))
       for client in self.common.clients:
         try:
           target = liblo.Address(client, port)
         except:
-          print str(err)
-          #sys.exit()
-        #print "Sending triggerNode message to", client, "(echo_id:", echo_id, "node_id:", key, "time:", value, "hop_level:", hop_level, ")"
-        #print "/twt/triggerNode", "(echo_id:", echo_id, "node_id:", key, "time:", value, "hop_level:", hop_level, ")"
-
+          common.log(str(err) + "\n")
         liblo.send(target, msg)
 
 
@@ -115,9 +105,9 @@ common = common.CommonData()
 # Callbacks (need to be defined outside the class)
 
 def fallback(path, args, types, src):
-  print "got unknown message '%s' from '%s'" % (path, src.get_url())
+  common.log("got unknown message '%s' from '%s'\n" % (path, src.get_url()))
   for a, t in zip(args, types):
-    print "argument of type '%s': %s" % (t, a)
+    common.log("argument of type '%s': %s\n" % (t, a))
 
 
 def twt_register_callback(path, args):
@@ -137,31 +127,31 @@ def twt_unregister_callback(path, args):
 def twt_threshold_up_callback(path, args):
   global common
   common.triggerLengthThreshold += 1
-  print "*** Changing threshold up: ", common.triggerLengthThreshold
+  common.log("*** Changing threshold up: " + common.triggerLengthThreshold + "\n")
 
 
 def twt_threshold_down_callback(path, args):
   global common
   if common.triggerLengthThreshold > 3:
     common.triggerLengthThreshold -= 1
-    print "*** Changing threshold down: ", common.triggerLengthThreshold
+    common.log("*** Changing threshold down: " + common.triggerLengthThreshold + "\n")
   else:
-    print "*** Lower limit reached. Threshold not changed\n"
+    common.log("*** Lower limit reached. Threshold not changed\n")
 
 
 def twt_delay_up_callback(path, args):
   global common
   common.initial_delay += 500
-  print "*** Changing delay up: ", common.initial_delay
+  common.log("*** Changing delay up: " + common.initial_delay + "\n")
 
 
 def twt_delay_down_callback(path, args):
   global common
   if common.initial_delay > 500:
     common.initial_delay -= 500
-    print "*** Changing delay down: ", common.initial_delay
+    common.log("*** Changing delay down: " + common.initial_delay + "\n")
   else:
-    print "*** Lower limit reached. Delay not changed\n"
+    common.log("*** Lower limit reached. Delay not changed\n")
 
   
 def twt_start_searching_callback(path, args):
@@ -172,23 +162,26 @@ def twt_start_searching_callback(path, args):
 
 def twt_disconnect_callback(path, args):
   global common
-  print 20*"O", "Closing connection"
+  common.log(20*"O" + "Closing connection\n")
   common.connection = False
 
 
 def twt_add_search_term_callback(path, args):
   global common
-  print "Adding '", args[0], "' to the search terms set"
+  common.log("Adding '" + args[0] + "' to the search terms set\n")
+  common.showSearchTerms()
   if args[0] not in common.search_terms:
     common.search_terms.add(args[0])
     common.connection = False
     common.newTweetsQueue.clear()
     #send_search_term(args[0])
+    
 
 
 def twt_remove_search_term_callback(path, args):
   global common
-  print "Removing '", args[0], "' from the search terms set"
+  common.log("Removing '" + args[0] + "' from the search terms set\n")
+  common.showSearchTerms()
   if args[0] in common.search_terms:
     common.search_terms.remove(args[0])
     common.connection = False
@@ -205,7 +198,7 @@ def twt_update_tweet_dequeue_time_callback(path, args):
       common.keyword_dispatcher.low = common.lower_dequeuing_limit
     if common.keyword_dispatcher.high < common.keyword_dispatcher.low: 
       common.keyword_dispatcher.high = common.keyword_dispatcher.low
-    print "changing local dequeing times %.2f, %.2f" % (common.keyword_dispatcher.low,   common.keyword_dispatcher.high, )
+    common.log("changing local dequeing times %.2f, %.2f\n" % (common.keyword_dispatcher.low, common.keyword_dispatcher.high))
   else:
     common.general_dispatcher.low = args[0]
     common.general_dispatcher.high = args[1]
@@ -213,18 +206,17 @@ def twt_update_tweet_dequeue_time_callback(path, args):
       common.general_dispatcher.low = common.lower_dequeuing_limit
     if common.general_dispatcher.high < common.general_dispatcher.low: 
       common.general_dispatcher.high = common.general_dispatcher.low
-    print "changing global dequeing times %.2f, %.2f" % (common.general_dispatcher.low, common.general_dispatcher.high, )
-  #print "new dequeuing time limits: ", args[0], " - ", args[1]
+    common.log("changing global dequeing times %.2f, %.2f\n" % (common.general_dispatcher.low, common.general_dispatcher.high))
 
 
 def twt_update_cosine_threshold_callback(path, args):
   global common
   common.cosine_threshold = args[0]
-  print "New cosine distance threshold = %.2f" % (common.cosine_threshold,)
+  common.log("New cosine distance threshold = %.2f\n" % (common.cosine_threshold,))
 
 def twt_keyword_callback(path, args):
   global common
-  print "Adding '", args[0], "' to the keyword list"
+  common.log("Adding '" + args[0] + "' to the keyword list\n")
   if args[0] not in common.keywords:
     common.keywords.add(args[0])
     common.connection = False
@@ -234,12 +226,12 @@ def send_keyword_term(term, port=8891):
   msg = liblo.Message("/twt/keyword")
   for a, t in zip((term,), ('s',)):
     msg.add((t, a))
-    #print "argument (%s): %s" % (t, a)
+    #common.log("argument (%s): %s\n" % (t, a))
   for client in common.clients:
     try:
       target = liblo.Address(client, port)
     except:
-      print str(err)
+      common.log(str(err) + "\n")
     liblo.send(target, msg)
   
   
@@ -250,11 +242,11 @@ def send_search_term(term, remove=False, port=8891):
   if remove: msg = liblo.Message("/twt/removesearchTerm")
   for a, t in zip((term,), ('s',)):
     msg.add((t, a))
-    #print "argument (%s): %s" % (t, a)
+    #common.log("argument (%s): %s\n" % (t, a))
   for client in common.clients:
     try:
       target = liblo.Address(client, port)
     except:
-      print str(err)
+      common.log(str(err) + "\n")
     liblo.send(target, msg)
   

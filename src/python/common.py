@@ -64,11 +64,14 @@ class CommonData(Singleton):
     self.distance_method = "cosine"
 
 
-    # keyword of the piece. Can be more than one
+    # keyword ("local term") of the piece. Can be more than one.
+    # We have decided that 'chuck' will take care of informing python of this, 
+    # so it should start empty
     self.keywords = set([])
     #self.keywords = set(["#mito", "mito"])
     
-    # search terms. According to tha last determination, it will start empty, although it could be populated initially
+    # other search terms. According to tha last determination, it will start empty, 
+    # although it could be populated initially
     self.search_terms = set([])
     #self.search_terms = set(["love","technology"])
     
@@ -76,12 +79,9 @@ class CommonData(Singleton):
     # add popular term(s) here, but that you won't use in the piece
     self.exclusion_terms = set(["justin"])
     
-    # IP addresses OSC messages will be sent to
+    # IP addresses OSC messages will be sent to (in other words, the chuck IP)
     # self.clients = set([])
     self.clients = set(["127.0.0.1"])
-    #self.clients = set(["171.64.197.161"])  # you can hard code more IP addresses here!!!
-    #self.clients = set(["127.0.0.1"])  # you can hard code more IP addresses here!!!
-    #self.clients = set(["127.0.0.1", "192.168.182.123", ])  # you can hard code more IP addresses here!!!
     
     self.lcs_threshold = 0.0
     self.cosine_threshold = 0.25
@@ -120,8 +120,12 @@ class CommonData(Singleton):
     return None
 
   def showSearchTerms(self):
-    print "SEARCH TERMS:\t", ", ".join(self.search_terms)
+    self.log("SEARCH TERMS:\t" + ", ".join(self.search_terms) + "\n")
     sys.stdout.flush()
 
-
+  def log(self, message, with_prefix=True):
+    if with_prefix:
+      message = "[tweets server] %s" % (message)
+    sys.stdout.write(message)
+    sys.stdout.flush()
       

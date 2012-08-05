@@ -100,7 +100,6 @@ def startChuckServer(options, pwd):
     command.append("twtSynthControlMASTER.ck:%s:%s:%s%s" % (options.python_ip, options.java_ip, options.local_word, terms_as_chuck_args) )
     if options.use_fake_tweets:
       command.append('twtTest5.ck')
-    print command
   sys.stdout.write("Starting sound server ... ")
   try:
     p = subprocess.Popen(command)
@@ -163,9 +162,11 @@ def compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder):
     sys.stdout.write('Compiling java app ...')
     sys.stdout.flush()
     subprocess.call(compileCommand)
-    sys.stdout.write('[done]')
+    sys.stdout.write('[done]\n')
     sys.stdout.flush()
   except:
+    sys.stdout.write('[failed]\n')
+    sys.stdout.flush()
     raise Exception, "Couldn't compile the Java App"
   finally:
     os.chdir(pwd)
@@ -204,7 +205,6 @@ def startJavaApp(options, pwd):
     return p
 
 
-        
 def main(argv=None):
   # parse arguments
   if argv is None:
@@ -258,14 +258,14 @@ def main(argv=None):
     while pids:
       pid, retval = os.wait()
       print('{p} finished'.format(p=pid))
-      pids.remove(pid)
+      # pids.remove(pid)
   except KeyboardInterrupt:
-    try:
-      for pid in pids:
+    for pid in pids:
+      try:
         os.kill(pid,9)
+      except:
+        pass
       return SUCCESS_EXIT_CODE
-    except:
-      return ERROR_EXIT_CODE
   except:
     return ERROR_EXIT_CODE
 

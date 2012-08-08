@@ -16,16 +16,12 @@ import dispatcher
 import re
 from collections import deque
 
-
-# Singleton class to hold common data (hack used for inter-thread communication)
-common = common.CommonData()
-
 # Handles OSC communication
 osc = oscManager.OSCManager()
 
 # To delay the tweets and send them one at a time (random wait between 0.5 and 1.5 seconds)
-common.general_dispatcher = dispatcher.Dispatcher("general dispatcher", osc, common, common.newTweetsQueue, 0.5, 1.5)
-common.keyword_dispatcher = dispatcher.Dispatcher("keyword dispatcher", osc, common, common.keywordTweetsQueue)
+common.general_dispatcher = dispatcher.Dispatcher("general dispatcher", osc, common.newTweetsQueue, 0.5, 1.5)
+common.keyword_dispatcher = dispatcher.Dispatcher("keyword dispatcher", osc, common.keywordTweetsQueue)
 
 # process to trigger the initial fake tweets
 common.initial_tweets = initialTweets.InitialTweets( common.keywordTweetsQueue, 5.0, 7.0 )
@@ -58,7 +54,7 @@ def searchTweets(username, password, terms):
         common.log("Disconnected from twitter. Reason: %s\n" % (e.reason))
         common.log("It should reconnect automatically\n")
     except tweetstream.AuthenticationError, e:
-        common.log("Disconnected from twitter. Reason: %s\n" % (e.reason))
+        common.log("Disconnected from twitter. Reason: %s\n" % (e))
         common.log("It should reconnect automatically\n")
   common.log("Twitter stream stopped\n")
 
@@ -154,11 +150,13 @@ def main():
   global osc
 
   # username and password used for autentication
-  username = "democratwitt"
-  password = "twitit"
+  if len(sys.argv) < 3: 
+    print "I need valid twitter account credentials!"
+    return 1
+  username = sys.argv[1]
+  password = sys.argv[2]
 
   # Start the thread that handles incomming OSC messages
-  
   osc.start()
   common.general_dispatcher.start()
   common.keyword_dispatcher.start()
@@ -166,11 +164,11 @@ def main():
   # dramatic pause!
   waitSomeTime()
 
-  # start initial tweets
+  # start initial (fake) tweets
   common.initial_tweets.start()  
   
   # Start the streaming  
-  terms = set(sys.argv[1:])
+  terms = set(sys.argv[3:])
   searchTweets(username, password, terms)
   
 def killAll():

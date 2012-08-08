@@ -17,7 +17,7 @@ class Dispatcher(threading.Thread):
   name = "dispatcher"
 
   # constructor
-  def __init__(self, name, oscManager, common, queue, low = 0.2, high = 0.2):
+  def __init__(self, name, oscManager, queue, low = 0.2, high = 0.2):
     # init the instance here
     self.oscMgr = oscManager
     self.queue = queue
@@ -26,7 +26,6 @@ class Dispatcher(threading.Thread):
     if high < low: high = low
     self.high = high
     self.name = name
-    self.common = common
     
     self.running = False
     
@@ -35,7 +34,7 @@ class Dispatcher(threading.Thread):
 
 
   def run(self):
-    self.common.log("Starting " + self.name + "\n")
+    common.log("Starting " + self.name + "\n")
     self.running = True
     while self.running:
       #dispatched the next tweet randomizing the inter tweet time
@@ -57,8 +56,8 @@ class Dispatcher(threading.Thread):
     # replace offensive words with '*'
     tweet['text'] = offensiveFilter.filter(tweet['text'])
     
-    results = getClosestTweet(self.common, tweet)
-    new = associateTweet(self.common, results['node'], str(results['closest_id']), results['dist'], results['closest_node'], tweet['local'])
+    results = getClosestTweet(tweet)
+    new = associateTweet(results['node'], str(results['closest_id']), results['dist'], results['closest_node'], tweet['local'])
 
     newTweet = new[0]
     triggers = new[1]
@@ -70,7 +69,7 @@ class Dispatcher(threading.Thread):
 
 
 # computes the closest tweet and build new trees if necessary
-def associateTweet(common, node, closest_id, dist, closest_node, local):  
+def associateTweet(node, closest_id, dist, closest_node, local):  
   tweet = node.tweet
   if tweet.has_key('text'):
     text = tweet['text'].encode('utf-8').strip()
@@ -108,7 +107,7 @@ def associateTweet(common, node, closest_id, dist, closest_node, local):
         
         
 # Find if there's a tweet close enough and adds the new tweet to it. If there's no tweet close enough, creates a new tree
-def getClosestTweet(common, tweet):
+def getClosestTweet(tweet):
   closest_node = None
   closest_id = 0
   dist = 0

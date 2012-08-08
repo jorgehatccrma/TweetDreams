@@ -12,10 +12,9 @@ class OSCManager(threading.Thread):
   # OSC server
   server = liblo.Server()
   
-  common = common.CommonData()
-  
   # constructor
   def __init__(self, port=8888):
+    
     # create server, listening on port 8888 by default
     try:
       self.server = liblo.Server(port)
@@ -73,7 +72,7 @@ class OSCManager(threading.Thread):
     for a, t in zip(msgArgs, msgTypes):
       msg.add((t, a))
       #common.log("argument (%s): %s\n" % (t, a))
-    for client in self.common.clients:
+    for client in common.clients:
       try:
         target = liblo.Address(client, port)
       except:
@@ -90,7 +89,7 @@ class OSCManager(threading.Thread):
       for a, t in zip((echo_id, key, value, hop_level), ('i', 's', 'f', 'i')):
         msg.add((t, a))
         #common.log("argument (%s): %s\n" % (t, a))
-      for client in self.common.clients:
+      for client in common.clients:
         try:
           target = liblo.Address(client, port)
         except:
@@ -99,39 +98,33 @@ class OSCManager(threading.Thread):
 
 
       
-      
-common = common.CommonData()
 
 # Callbacks (need to be defined outside the class)
 
 def fallback(path, args, types, src):
-  common.log("got unknown message '%s' from '%s'\n" % (path, src.get_url()))
+  common.log("got unknown message '%s' from '%s'\n" % (path, srcommon.get_url()))
   for a, t in zip(args, types):
     common.log("argument of type '%s': %s\n" % (t, a))
 
 
 def twt_register_callback(path, args):
-  global common
   ip_str = args[0]
   common.register(ip_str)
   common.showClients()
 
     
 def twt_unregister_callback(path, args):
-  global common
   ip_str = args[0]
   common.unregister(ip_str)
   common.showClients()
 
 
 def twt_threshold_up_callback(path, args):
-  global common
   common.triggerLengthThreshold += 1
   common.log("*** Changing threshold up: " + common.triggerLengthThreshold + "\n")
 
 
 def twt_threshold_down_callback(path, args):
-  global common
   if common.triggerLengthThreshold > 3:
     common.triggerLengthThreshold -= 1
     common.log("*** Changing threshold down: " + common.triggerLengthThreshold + "\n")
@@ -140,13 +133,11 @@ def twt_threshold_down_callback(path, args):
 
 
 def twt_delay_up_callback(path, args):
-  global common
   common.initial_delay += 500
   common.log("*** Changing delay up: " + common.initial_delay + "\n")
 
 
 def twt_delay_down_callback(path, args):
-  global common
   if common.initial_delay > 500:
     common.initial_delay -= 500
     common.log("*** Changing delay down: " + common.initial_delay + "\n")
@@ -155,19 +146,16 @@ def twt_delay_down_callback(path, args):
 
   
 def twt_start_searching_callback(path, args):
-  global common
   common.waitingForChuck = False
   common.waitingForProcessing = False
 
 
 def twt_disconnect_callback(path, args):
-  global common
   common.log(20*"O" + "Closing connection\n")
   common.connection = False
 
 
 def twt_add_search_term_callback(path, args):
-  global common
   common.log("Adding '" + args[0] + "' to the search terms set\n")
   common.showSearchTerms()
   if args[0] not in common.search_terms:
@@ -179,7 +167,6 @@ def twt_add_search_term_callback(path, args):
 
 
 def twt_remove_search_term_callback(path, args):
-  global common
   common.log("Removing '" + args[0] + "' from the search terms set\n")
   common.showSearchTerms()
   if args[0] in common.search_terms:
@@ -190,7 +177,6 @@ def twt_remove_search_term_callback(path, args):
 
 
 def twt_update_tweet_dequeue_time_callback(path, args):
-  global common
   if args[2] == 0:
     common.keyword_dispatcher.low = args[0]
     common.keyword_dispatcher.high = args[1]
@@ -210,19 +196,16 @@ def twt_update_tweet_dequeue_time_callback(path, args):
 
 
 def twt_update_cosine_threshold_callback(path, args):
-  global common
   common.cosine_threshold = args[0]
   common.log("New cosine distance threshold = %.2f\n" % (common.cosine_threshold,))
 
 def twt_keyword_callback(path, args):
-  global common
   common.log("Adding '" + args[0] + "' to the keyword list\n")
   if args[0] not in common.keywords:
     common.keywords.add(args[0])
     common.connection = False
 
 def send_keyword_term(term, port=8891):
-  global common
   msg = liblo.Message("/twt/keyword")
   for a, t in zip((term,), ('s',)):
     msg.add((t, a))
@@ -237,7 +220,6 @@ def send_keyword_term(term, port=8891):
   
   
 def send_search_term(term, remove=False, port=8891):
-  global common
   msg = liblo.Message("/twt/newsearchTerm")
   if remove: msg = liblo.Message("/twt/removesearchTerm")
   for a, t in zip((term,), ('s',)):

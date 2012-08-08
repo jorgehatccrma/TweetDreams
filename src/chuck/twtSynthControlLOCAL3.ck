@@ -64,7 +64,7 @@ public class twtNodeDataLocal
         gLastPlayedSynth++; if( gLastPlayedSynth >= gNumSynths - 1) 0 => gLastPlayedSynth;
 
         if( twtSynthCtlLocalDebug )
-            <<< "[sound server] twtNodeLocalData: triggering synth ", gLastPlayedSynth >>>;
+            <<< "[sound client] twtNodeLocalData: triggering synth ", gLastPlayedSynth >>>;
         
         //gSynthArray[gLastPlayedSynth].play( hopLvl, noteSeq, wavNum, modeNum, fltFrqRto, fltQ, dcyTcks, attTcks, stepTcks, pan);
         spork ~ gSynthArray[gLastPlayedSynth].play( hopLvl, 0, noteSeq, wavNum, modeNum, fltFrqRto, fltQ, dcyTcks, attTcks, stepTcks, pan);
@@ -80,7 +80,7 @@ public class twtNodeDataLocal
         {
             gLastPlayedSynth++; if( gLastPlayedSynth >= gNumSynths - 1) 0 => gLastPlayedSynth;
             if( twtSynthCtlLocalDebug )
-                <<< "[sound server] twtNodeLocalData: triggering Local synth ", gLastPlayedSynth >>>;
+                <<< "[sound client] twtNodeLocalData: triggering Local synth ", gLastPlayedSynth >>>;
             spork ~ gSynthArray[gLastPlayedSynth].play( hopLvl, 0, noteSeq, localWavNum, modeNum, fltFrqRto*0.15, fltQ, 40, 1, stepTcks, pan);           
         }
     }
@@ -139,7 +139,7 @@ Gain revMix[ gNumChans ];
 0.2 => float wetgn;     // default gain to reverbs
 for (0 => int i; i < gNumChans; i++ )
 {
-    // <<< "[sound server] test1","--------">>>;
+    // <<< "[sound client] test1","--------">>>;
     //inputs[i*2]   => dryMix[i*2]   => DCB[i*2]   => dac.chan(i*2);
     //inputs[i*2+1] => dryMix[i*2+1] => DCB[i*2+1] => dac.chan(i*2+1);
     
@@ -147,8 +147,8 @@ for (0 => int i; i < gNumChans; i++ )
     //inputs[i*2+1] => revMix[i];
     //revMix[i] => DCB2[i] => rev[i];
     
-    //<<< "[sound server] test2","--------">>>;
-    //<<<"[sound server]  channels?", rev[i].channels() >>>;
+    //<<< "[sound client] test2","--------">>>;
+    //<<<"[sound client]  channels?", rev[i].channels() >>>;
     //rev[i].chan(0) => dac.chan(i*2);
     //rev[i].chan(1) => dac.chan(i*2+1);
     
@@ -173,7 +173,7 @@ for( 0 => int i; i < gNumSynths; i++){
 }
 
 // spork listeners --------------------------------------------
-<<< "[sound server] starting twtSynthControlLOCAL3.ck", "" >>>;
+<<< "[sound client] starting twtSynthControlLOCAL3.ck", "" >>>;
 spork ~ newLocalNodeListener();
 spork ~ triggerLocalNodeListener();
 spork ~ staticNodeListener();
@@ -230,9 +230,9 @@ fun void newLocalNodeListener()
             
             
             if( twtSynthCtlLocalDebug )
-                <<< "[sound server]      twtSynthControlLOCAL3 new node: ", nodeID, " ", msgString >>>;   // DEBUG
+                <<< "[sound client]      twtSynthControlLOCAL3 new node: ", nodeID, " ", msgString >>>;   // DEBUG
             if( twtSynthCtlLocalDebug2 )
-                <<< "[sound server]      twtSynthControlLOCAL3 new node: ", nodeID >>>;   // DEBUG
+                <<< "[sound client]      twtSynthControlLOCAL3 new node: ", nodeID >>>;   // DEBUG
             
             if( synthDataArray[nodeID] == NULL )
             {
@@ -241,7 +241,7 @@ fun void newLocalNodeListener()
             } 
             else
             {
-                <<<"[sound server] twtSynthControlLOCAL: Warning: Received newNode message for preexisting node","">>>;
+                <<<"[sound client] twtSynthControlLOCAL: Warning: Received newNode message for preexisting node","">>>;
             }
             synthDataArray[ nodeID ].init( nodeID, wavNum, modeNum, fltR, fltQ, dcy, att, stp, panTemp);           
             synthDataArray[ nodeID ].setNoteSeq( dummy );
@@ -291,7 +291,7 @@ fun void dryLvlListener()
             //dryLvl => dryMixR.gain;
             
             if( twtSynthCtlLocalDebug )
-            <<< "[sound server]      LOCAL: dryLvl message received:", dryLvl >>>;
+            <<< "[sound client]      LOCAL: dryLvl message received:", dryLvl >>>;
         }
     }
 }
@@ -309,15 +309,15 @@ while( 1 )
         triggerNodeEvent.getFloat() => float delayMsec;
         triggerNodeEvent.getInt() => int hopLevel;
         if( twtSynthCtlLocalDebug )
-          <<< "[sound server]      LOCAL: triggerNode message received. echoID:", echoID, " nodeID:", nodeID, " time:", delayMsec, " hopLevel:", hopLevel  >>>;
+          <<< "[sound client]      LOCAL: triggerNode message received. echoID:", echoID, " nodeID:", nodeID, " time:", delayMsec, " hopLevel:", hopLevel  >>>;
         if( twtSynthCtlLocalDebug2 )
-          <<< "[sound server]      twtSynthControl2: triggerNode message received, node:", nodeID, " hopLevel:", hopLevel  >>>;
+          <<< "[sound client]      twtSynthControl2: triggerNode message received, node:", nodeID, " hopLevel:", hopLevel  >>>;
         
         // error handling: if we have not gotten a newNode ID for this one... make one up for now
         if( synthDataArray[nodeID] == NULL )
         {
             if( twtSynthCtlLocalDebug )
-                <<<"[sound server]      LOCAL: WARNING: trigger received before newNode msg ",nodeID >>>;
+                <<<"[sound client]      LOCAL: WARNING: trigger received before newNode msg ",nodeID >>>;
             
             // initialize new node
             twtNodeDataLocal temp_node @=> synthDataArray[ nodeID ];

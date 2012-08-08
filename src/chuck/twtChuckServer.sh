@@ -1,5 +1,13 @@
 #!/bin/bash
 
+
+##########################################################
+# 
+# This script should be working, but has been deprecated
+# 
+##########################################################
+
+
 # get the local machine's IP address
 ip=$(ipconfig getifaddr en0)				# wired
 #ip=$(ipconfig getifaddr en1)				# wifi's

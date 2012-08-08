@@ -1,7 +1,5 @@
 import common
 
-common = common.CommonData()
-
 # Return the length of the longest common substring between 2 strings
 def LCSubstr_len(S, T):
   m = len(S); n = len(T)
@@ -37,7 +35,6 @@ def LCSubstr_set(S, T):
 
 # exluding the track terms of the piece (defined in common)
 def totalDistance(subStrSet):
-  global common
   d = 0
   for sub in subStrSet:
     for term in common.track_terms:

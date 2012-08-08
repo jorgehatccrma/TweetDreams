@@ -1,9 +1,16 @@
 #!/bin/bash
 
+
+##########################################################
+# 
+# THIS SCRIPT IS DEPRECATED. USE startDreaming.py INSTEAD
+# 
+##########################################################
+
+
 # get the local machine's IP address
 # ip=$(ipconfig getifaddr en1)
 # echo $ip
-
 
 
 trap 'kill $(jobs -p)' EXIT

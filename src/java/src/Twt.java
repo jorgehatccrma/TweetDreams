@@ -423,7 +423,7 @@ public class Twt extends PApplet{
 					float del = theOscMessage.get(2).floatValue();
 					int hopLevel = theOscMessage.get(3).intValue();
 					
-					println(hopLevel+","+echoID+","+nodeID+","+del);
+          // println(hopLevel+","+echoID+","+nodeID+","+del);
 					handleTrigger(echoID, nodeID, del, hopLevel);
 
 					return;

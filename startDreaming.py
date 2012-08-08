@@ -3,6 +3,7 @@ import sys
 import optparse
 import subprocess
 import time
+import getpass
 
 SUCCESS_EXIT_CODE = 0
 ERROR_EXIT_CODE = 1
@@ -114,7 +115,13 @@ def startChuckServer(options, pwd):
   
   
 def startPythonServer(options, pwd):
+  
+  username = raw_input('Twitter Username: ')
+  password = getpass.getpass('Twitter Password: ')
+  
   command = [os.path.join(pwd, 'src', 'python', 'twt.py')]
+  command.append(username)
+  command.append(password)
   command.append(options.local_word)
   for term in options.terms: command.append(term)
   sys.stdout.write("Starting tweets server ... ")

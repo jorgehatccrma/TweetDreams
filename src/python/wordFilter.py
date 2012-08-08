@@ -8,7 +8,7 @@ import common
 offensive_words = open(os.path.join(sys.prefix,'offensive_words.txt'), 'r').read().split()
 
 def printWords():
-  common.CommonData().log("List of offensive words: " + ", ".join(offensive_words))
+  common.log("List of offensive words: " + ", ".join(offensive_words))
   
 def filter( text ):
   for w in offensive_words:

@@ -19,7 +19,7 @@ class InitialTweets(threading.Thread):
     
   def run(self):
     start_messages = open(os.path.join(sys.prefix,'initial_tweets.txt'), 'r').readlines()
-    common.CommonData().log("Starting initial tweets\n")
+    common.log("Starting initial tweets\n")
     self.running = True
     message_id = 0;
     while self.running and message_id < len(start_messages):

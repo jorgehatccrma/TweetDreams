@@ -71,6 +71,7 @@ public class Twt extends PApplet{
 	private Random RandomIntGen = new Random();
 	
 	private boolean auto_animate = true;
+	private boolean vertical_term_list = false;
 	
 	// Hack
   private static Hashtable<String,String> params = new Hashtable<String,String>();
@@ -269,41 +270,41 @@ public class Twt extends PApplet{
 		fill(0, 0, 0, tracer_alpha);
 		//fill(30, 30, 30, 80);
 		
-		float rect_width = 2f*(distance_from_panel_to_camera)*tan(fov/2);
-		float rect_height = rect_width * aspect_ratio;
+		float rect_height = 2f*(distance_from_panel_to_camera)*tan(fov/2);
+		float rect_width = rect_height * aspect_ratio;
 		
-		float dx = rect_height/2f - width/2f;
-		float dy = rect_width/2f - height/2f;
-		//println( rect_height + " " + dx + " " + rect_width + " " + dy );
+		float dx = rect_width/2f - width/2f;
+		float dy = rect_height/2f - height/2f;
+		//println( rect_width + " " + dx + " " + rect_height + " " + dy );
 		
 		
 		pushMatrix();
 		translate(0, 0, camera.z() - distance_from_panel_to_camera);
 		
 		// draw a rectangle filling the entire visual screen
-		//rect(-dx, -dy, rect_height, rect_width );
+		//rect(-dx, -dy, rect_width, rect_height );
 		// OpenGL version with gradient
 		beginShape(QUADS);
 		fill(Colors.background_top.getRed(), Colors.background_top.getGreen(), Colors.background_top.getBlue(), tracer_alpha);
 		vertex(-dx,-dy);
-		vertex(rect_height-dx,-dy);
+		vertex(rect_width-dx,-dy);
 		fill(Colors.background_bottom.getRed(), Colors.background_bottom.getGreen(), Colors.background_bottom.getBlue(), tracer_alpha);
-		vertex(rect_height-dx, rect_width-dy);
-		vertex(-dx, rect_width-dy);
+		vertex(rect_width-dx, rect_height-dy);
+		vertex(-dx, rect_height-dy);
 		endShape(); 
 
 		// show track terms in the screen
-		displayTrackTerms(-dx+margin, -dy+margin);
+		displayTrackTerms(-dx+margin, -dy+margin, rect_width-dx);
 		
 		// show the incoming tweets
 		if(display_tweet_stack)
-			local_incoming_stack.draw(rect_height-2*margin, rect_width-2*margin, rect_height-dx-margin, rect_width-dy-margin);
+			local_incoming_stack.draw(rect_width-2*margin, rect_height-2*margin, rect_width-dx-margin, rect_height-dy-margin);
 		
 		popMatrix();
 	}
 	
 	
-	private void displayTrackTerms(float x_offset, float y_offset) {
+	private void displayTrackTerms(float x_offset, float y_offset, float rect_width) {
 
 		textFont(track_terms_font);
 		textSize(search_terms_font_size);
@@ -311,14 +312,23 @@ public class Twt extends PApplet{
 		y_offset += textAscent() + textDescent();
 		int alpha = 225;
 		float z_pos = 0;
+		float x_offset_orig = x_offset;
 
 		fill(Colors.keywordTweetColor.getRGB(), alpha);
 		synchronized(keywords) {
 			Iterator<String> it = keywords.iterator();
 			while (it.hasNext()) {
 				String term = it.next();
+				if (!vertical_term_list & ((x_offset+textWidth(term)) > rect_width) ) {
+          y_offset += textAscent() + textDescent();
+          x_offset = x_offset_orig;
+				}
 				text(term, x_offset, y_offset, z_pos);
-				y_offset += textAscent() + textDescent();
+				if (vertical_term_list) {
+          y_offset += textAscent() + textDescent();
+				} else {
+          x_offset += textWidth(term+" ");
+				}
 			}
 		}
 		
@@ -327,8 +337,16 @@ public class Twt extends PApplet{
 			Iterator<String> it = track_terms.iterator();
 			while (it.hasNext()) {
 				String term = it.next();
+				if (!vertical_term_list & ((x_offset+textWidth(term)) > rect_width) ) {
+          y_offset += textAscent() + textDescent();
+          x_offset = x_offset_orig;
+				}
 				text(term, x_offset, y_offset, z_pos);
-				y_offset += textAscent() + textDescent();
+				if (vertical_term_list) {
+          y_offset += textAscent() + textDescent();
+				} else {
+          x_offset += textWidth(term+" ");
+				}
 			}
 		}
 	}

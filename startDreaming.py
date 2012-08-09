@@ -28,10 +28,20 @@ def optionParser():
                     "a pound character (#), the whole word must be enclosed in single quotes (e.g. " + 
                     "-l '#music')")
                     
-  parser.add_option('-w', '--words-file', 
+  parser.add_option('-f', '--words-file', 
                     action="store", dest="words_file", 
                     default="search_terms.txt", 
                     help="Read the search words from the specified file")
+
+  parser.add_option('--width', 
+                    action="store", dest="vis_width", 
+                    default="1024", type="int", 
+                    help="Width of the visualizer canvas")
+
+  parser.add_option('--height', 
+                    action="store", dest="vis_height", 
+                    default="768", type="int", 
+                    help="Height of the visualizer canvas")
   
 
   # flag-options to enable/disbale different parts of TweetDreams
@@ -53,7 +63,7 @@ def optionParser():
                         action="store_false", dest="run_chuck", 
                         default=True, 
                         help="Don't run the (chuck) sound server")
-  flags_opts.add_option('-f', '--fake-tweets', 
+  flags_opts.add_option('-o', '--fake-tweets', 
                         action="store_true", dest="use_fake_tweets",
                         default=False,
                         help="(Use only for development!) this will fake tweets to test the sound server")
@@ -154,6 +164,7 @@ def compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder):
   # TODO: we shouldn't do this every time, but since is fast, is not too bad
   compileCommand = ['javac']
   compileCommand.append('-g')
+  # compileCommand.append('-Xlint')
   # compileCommand.append('-verbose')
   compileCommand.append('-classpath')
   compileCommand.append(':'.join(jars))
@@ -197,8 +208,8 @@ def startJavaApp(options, pwd):
   command.append('-classpath')
   command.append(':'.join(jars))
   command.append('Twt')
-  command.append('800')
-  command.append('600')
+  command.append("width=%d" % options.vis_width)
+  command.append("height=%d" % options.vis_height)
     
   sys.stdout.write("Starting visualizer app ... ")
   os.chdir(srcFolder)

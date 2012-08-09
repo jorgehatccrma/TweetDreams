@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.Random;
+import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.awt.Color;
 import processing.opengl.*;
@@ -71,6 +72,9 @@ public class Twt extends PApplet{
 	
 	private boolean auto_animate = true;
 	
+	// Hack
+  private static Hashtable<String,String> params = new Hashtable<String,String>();
+	
 	// INSTANCE ATTRIBUTES & METHODS
 	OscP5 oscP5;
 	
@@ -108,17 +112,25 @@ public class Twt extends PApplet{
 		hint( DISABLE_DEPTH_TEST );
 		hint( ENABLE_OPENGL_4X_SMOOTH );
 
-		//size(1024, 768);
-		//size(1920, 1080, OPENGL);
-		//size(1024, 768, OPENGL);
-		//size(800, 600, OPENGL);
-		//size(1200, 300, OPENGL);
-		//size(1280, 800, OPENGL);
-		//size(1280, 768, OPENGL);
-		//size(1680, 1050, OPENGL);
-		//triplehead
-		size(1920, 1080, OPENGL);
-		//size(2400, 600, OPENGL);
+
+    // if (args.length >= 2) {
+    //   size(Integer.parseInt(args[0]), Integer.parseInt(args[1]), OPENGL);
+    // } else {
+  		//size(1024, 768);
+  		//size(1920, 1080, OPENGL);
+  		//size(1024, 768, OPENGL);
+  		//size(800, 600, OPENGL);
+  		//size(1200, 300, OPENGL);
+  		//size(1280, 800, OPENGL);
+  		//size(1280, 768, OPENGL);
+  		//size(1680, 1050, OPENGL);
+  		//triplehead
+  		//size(1920, 1080, OPENGL);
+  		//size(2400, 600, OPENGL);
+    // }
+		
+		size(Integer.parseInt(param("width")), Integer.parseInt(param("height")), OPENGL);
+		
 		
 		//Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 	    //size(screen.width,screen.height,OPENGL);
@@ -591,13 +603,49 @@ public class Twt extends PApplet{
 		}
 	}
 
+  // overwrite the default param() function
+  // if we're not online (i.e. running as application), the new function
+  // will use the Hashtable to find the param
+  public String param(String id) {
+    if (online) return super.param(id);
+    else return (String)params.get(id);
+  }
 	
 	// adds Java Application output, "--present" is full screen mode
 	public static void main(String args[]) 
 	{
-		  PApplet.main(new String[] {"--hide-stop", "--display=1", "--present", "--bgcolor=#333333",Twt.class.getName()});
-		  //PApplet.main(new String[] {"--hide-stop", "--display=1", "--bgcolor=#333333",Twt.class.getName()});
-		  //PApplet.main(new String[] {Twt.class.getName()});
+    // we'll read the app's width and height from command line args.
+    // See: http://wiki.processing.org/w/Setting_width/height_dynamically
+    // The command lines must be in the following form:
+    // >> java Twt width=800 height=600
+    
+    String[] newArgs = new String[args.length+5];
+    int i;
+    for(i=0; i<args.length; i++) {
+      newArgs[i]=args[i];
+      if (args[i].indexOf("=")!=-1) {
+        String[] pair=split(args[i], '=');
+        params.put(pair[0],pair[1]);
+      }
+    }
+    newArgs[i+0] = "--hide-stop";
+    newArgs[i+1] = "--display=1";
+    newArgs[i+2] = "--present";
+    // newArgs[i+3] = "--bgcolor=#222222";
+    newArgs[i+3] = "--bgcolor=#000000";
+    newArgs[i+4] = Twt.class.getName();
+    
+    // apply default width and height if necessary
+    if (!params.containsKey("width")) {
+      params.put("width","800");
+    }
+    if (!params.containsKey("height")) {
+      params.put("height","600");
+    }
+    
+    // pass on to PApplet entry point
+    PApplet.main(newArgs);
+    
 	}
 	
 

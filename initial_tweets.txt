@@ -1,8 +1,5 @@
-ccrma: Welcome to TweetDreams! - #TweetDreams
-ccrma: TweetDreams makes music from Twitter data - #TweetDreams
-ccrma: You can be part of TweetDreams - #TweetDreams
-ccrma: Tweet with #TweetDreams to play - #TweetDreams
-ccrma: Similar tweets create trees of related melodies - #TweetDreams
-ccrma: Search terms are shown in the upper left - #TweetDreams
-ccrma: What are TweetDreams made of? - #TweetDreams
-ccrma: TweetDreams are made of cheese :-P  #TweetDreams
+ccrma: Welcome to TweetDreams! - #gaffta
+ccrma: TweetDreams makes music from live Twitter data - #gaffta
+ccrma: Join in by tweeting with #gaffta
+ccrma: What are TweetDreams made of? - #gaffta
+ccrma: TweetDreams are made of cheese :-P  #gaffta

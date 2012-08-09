@@ -45,6 +45,7 @@ for(int i; i < me.args(); i++)
 
 <<<"[sound server] twtSynthControlMASTER: python computer address: ", pyth_server >>>;
 <<<"[sound server] twtSynthControlMASTER: proc computer address: ", proc_client >>>;
+<<<"[sound server] Using ", gKeyword, " as keyword" >>>;
 
 
 // ports: 

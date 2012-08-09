@@ -1,4 +1,6 @@
-love
-music 
+music
 technology 
-play
+creative
+code
+data
+visualize

@@ -197,6 +197,8 @@ def startJavaApp(options, pwd):
   command.append('-classpath')
   command.append(':'.join(jars))
   command.append('Twt')
+  command.append('800')
+  command.append('600')
     
   sys.stdout.write("Starting visualizer app ... ")
   os.chdir(srcFolder)

@@ -98,10 +98,18 @@ def parseTweet(tweet):
   if tweet.has_key('retweeted'):
     if tweet['retweeted']: return
   
+  # TODO: should we filter out non-english messages?
+  # in theory we could use the 'lang' attibute, but many non-english 
+  # tweets use lang=en anyways, so is not very robust.
+  # A more scientific was is to use a language detection tool, such as https://github.com/saffsd/langid.py
+  
   if tweet.has_key('text'):
     # filter out any URL in the tweet
     tweet['text'] = re.sub(url_pattern, '', tweet['text'])
-    
+    #replace &gt and &lt (TODO: are there other special characters for Twitter? Should we use some generic HTML decoding?)
+    tweet['text'] = tweet['text'].replace('&lt;','<')
+    tweet['text'] = tweet['text'].replace('&gt;','>')
+        
     if tweet.has_key('user') and tweet['user'].has_key('screen_name'):
       tweet['text'] = tweet['user']['screen_name'].encode('utf-8') + ": " + tweet['text']
     else:

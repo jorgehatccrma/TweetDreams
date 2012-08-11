@@ -62,6 +62,10 @@ different file (see next section).
 **IP addresses:** If different parts of *TweetDreams* are run in different machines, each one needs to 
 know the IP addresses where the others are running.
 
+**Initial Tweets:** Is possible to pre-define a set of "fake" tweets to be displayed at the beginning of the performance. These are defined the `initial_tweets.txt`.
+
+**Banned terms:** For some performances we have been asked to remove some offensive words. The words declared in the `offensive_words.txt` file will be replaced with as many * as letters in the word.
+
 
 4) Run it
 ---------

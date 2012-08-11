@@ -3,7 +3,7 @@
 
 Real-time sonification and visualization of Twitter data.
 
-More information at: https://ccrma.stanford.edu/groups/tweetdreams/
+More information at: https://ccrma.stanford.edu/groups/tweetdreams/ and https://ccrma.stanford.edu/groups/tweetdreams/
 
 
 Requirements

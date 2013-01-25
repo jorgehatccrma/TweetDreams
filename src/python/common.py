@@ -14,7 +14,7 @@ This module is used as a "singleton class", to store "app-wide" data
 # local port (port listening for incomming OSC messages)
 local_port = 8888
 # remote port (port that will receive the OSC messages in the client machine)
-# TODO: this could be client-specific. To handle that, instead of a list of 
+# TODO: this could be client-specific. To handle that, instead of a list of
 #       clients we should have a map of clients
 remote_port = 8890
 
@@ -31,7 +31,7 @@ sentNodes = []
 # autoincremental id of the echoes
 echo_id = 0
 newTweetsQueue = deque([])
-keywordTweetsQueue = deque([])    
+keywordTweetsQueue = deque([])
 
 #
 general_dispatcher = None
@@ -56,12 +56,12 @@ distance_method = "cosine"
 
 
 # keyword ("local term") of the piece. Can be more than one.
-# We have decided that 'chuck' will take care of informing python of this, 
+# We have decided that 'chuck' will take care of informing python of this,
 # so it should start empty
 keywords = set([])
 #keywords = set(["#mito", "mito"])
 
-# other search terms. According to tha last determination, it will start empty, 
+# other search terms. According to tha last determination, it will start empty,
 # although it could be populated initially
 search_terms = set([])
 #search_terms = set(["love","technology"])
@@ -86,7 +86,7 @@ lower_dequeuing_limit = 0.1
 ##############################################
 
 
-    
+
 def register(ip_str):
   clients.add(ip_str)
 
@@ -97,7 +97,7 @@ def unregister(ip_str):
 def showClients():
   print "Current clients:"
   for client in clients:
-    print client
+    self.log(client + "\n")
 
 def newNode(tweet):
   node = Node(tweet)
@@ -119,4 +119,3 @@ def log(message, with_prefix=True):
     message = "[tweets server] %s" % (message)
   sys.stdout.write(message)
   sys.stdout.flush()
-      

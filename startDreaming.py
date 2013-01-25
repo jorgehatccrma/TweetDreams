@@ -14,84 +14,84 @@ def getSearchTerms(file_path):
   if not os.path.isabs(file_path):
     file_path = os.path.join(sys.prefix, file_path)
   return open(file_path, 'r').read().split()
-  
+
 
 def optionParser():
   # create the option parser
   parser = optparse.OptionParser()
-  
+
   # add main options
-  parser.add_option('-l', '--local-word', 
-                    action="store", dest="local_word", 
-                    default="#TweetDreams", 
+  parser.add_option('-l', '--local-word',
+                    action="store", dest="local_word",
+                    default="#TweetDreams",
                     help="Define the local search word (by default is #TweetDreams). If it contains " +
-                    "a pound character (#), the whole word must be enclosed in single quotes (e.g. " + 
+                    "a pound character (#), the whole word must be enclosed in single quotes (e.g. " +
                     "-l '#music')")
-                    
-  parser.add_option('-f', '--words-file', 
-                    action="store", dest="words_file", 
-                    default="search_terms.txt", 
+
+  parser.add_option('-f', '--words-file',
+                    action="store", dest="words_file",
+                    default="search_terms.txt",
                     help="Read the search words from the specified file")
 
-  parser.add_option('--width', 
-                    action="store", dest="vis_width", 
-                    default="1024", type="int", 
+  parser.add_option('--width',
+                    action="store", dest="vis_width",
+                    default="1024", type="int",
                     help="Width of the visualizer canvas")
 
-  parser.add_option('--height', 
-                    action="store", dest="vis_height", 
-                    default="768", type="int", 
+  parser.add_option('--height',
+                    action="store", dest="vis_height",
+                    default="768", type="int",
                     help="Height of the visualizer canvas")
-  
+
 
   # flag-options to enable/disbale different parts of TweetDreams
   flags_opts = optparse.OptionGroup(parser, "Flags",
                       "This options will enable/disable locally running the different parts of TweetDreams.")
-  
-  flags_opts.add_option('-T', '--run-tweet-server', 
-                        action="store_true", dest="run_python", 
+
+  flags_opts.add_option('-T', '--run-tweet-server',
+                        action="store_true", dest="run_python",
                         default=True, help="Run the (python) tweet server")
-  flags_opts.add_option('-t', '--no-tweet-server', 
-                        action="store_false", dest="run_python", 
+  flags_opts.add_option('-t', '--no-tweet-server',
+                        action="store_false", dest="run_python",
                         default=True, help="Don't run the (python) tweet server")
-  
-  flags_opts.add_option('-S', '--run-sound', 
-                        action="store_true", dest="run_chuck", 
-                        default=True, 
+
+  flags_opts.add_option('-S', '--run-sound',
+                        action="store_true", dest="run_chuck",
+                        default=True,
                         help="Run the (chuck) sound server")
-  flags_opts.add_option('-s', '--no-sound', 
-                        action="store_false", dest="run_chuck", 
-                        default=True, 
+  flags_opts.add_option('-s', '--no-sound',
+                        action="store_false", dest="run_chuck",
+                        default=True,
                         help="Don't run the (chuck) sound server")
-  flags_opts.add_option('-o', '--fake-tweets', 
+  flags_opts.add_option('-o', '--fake-tweets',
                         action="store_true", dest="use_fake_tweets",
                         default=False,
                         help="(Use only for development!) this will fake tweets to test the sound server")
-  
-  flags_opts.add_option('-V', '--run-visualizer', 
-                        action="store_true", dest="run_java", 
-                        default=False, 
+
+  flags_opts.add_option('-V', '--run-visualizer',
+                        action="store_true", dest="run_java",
+                        default=False,
                         help="Run the (java) visualizer")
-  flags_opts.add_option('-v', '--no-visualizer', 
-                        action="store_false", 
-                        dest="run_java", default=False, 
+  flags_opts.add_option('-v', '--no-visualizer',
+                        action="store_false",
+                        dest="run_java", default=False,
                         help="Don't run the (java) visualizer")
-  
-  
+
+
   # specify IP addresses of different parts of TweetDreams
   ip_opts = optparse.OptionGroup(parser, "IP addresses",
                       "This options specify the IP addresses of the different parts of TweetDreams.")
-  
-  ip_opts.add_option('-p', '--tweet-server-ip', 
+
+  ip_opts.add_option('-p', '--tweet-server-ip',
                         action="store", dest="python_ip", type="string", default="localhost")
-  ip_opts.add_option('-c', '--sound-ip', 
+  ip_opts.add_option('-c', '--sound-ip',
                         action="store", dest="chuck_ip", type="string", default="localhost")
-  ip_opts.add_option('-j', '--visualizer-ip', 
+  ip_opts.add_option('-j', '--visualizer-ip',
                         action="store", dest="java_ip", type="string", default="localhost")
-    
+
   parser.add_option_group(flags_opts)
   parser.add_option_group(ip_opts)
-  
+
   return parser
 
 def startChuckServer(options, pwd):
@@ -122,16 +122,17 @@ def startChuckServer(options, pwd):
     os.chdir(pwd)
     sys.stdout.flush()
     return p
-  
-  
+
+
 def startPythonServer(options, pwd):
-  
+
   username = raw_input('Twitter Username: ')
   password = getpass.getpass('Twitter Password: ')
-  
+
   command = [os.path.join(pwd, 'src', 'python', 'twt.py')]
   command.append(username)
   command.append(password)
+  command.append(options.chuck_ip)
   command.append(options.local_word)
   for term in options.terms: command.append(term)
   sys.stdout.write("Starting tweets server ... ")
@@ -145,8 +146,8 @@ def startPythonServer(options, pwd):
     os.chdir(pwd)
     sys.stdout.flush()
     return p
-  
-  
+
+
 
 def compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder):
   jars = [os.curdir]
@@ -188,7 +189,7 @@ def compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder):
     raise Exception, "Couldn't compile the Java App"
   finally:
     os.chdir(pwd)
-  
+
   return jars
 
 def startJavaApp(options, pwd):
@@ -201,7 +202,7 @@ def startJavaApp(options, pwd):
     jars = compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder)
   except:
     raise
-  
+
   # generate the run command
   command = ['java']
   command.append('-Djava.library.path=%s' % (openGLFolder))
@@ -210,7 +211,7 @@ def startJavaApp(options, pwd):
   command.append('Twt')
   command.append("width=%d" % options.vis_width)
   command.append("height=%d" % options.vis_height)
-    
+
   sys.stdout.write("Starting visualizer app ... ")
   os.chdir(srcFolder)
   try:
@@ -236,10 +237,10 @@ def main(argv=None):
   except:
     print >>sys.stderr, "for help use --help (-h)"
     return ERROR_WRONG_ARGUMENT
-  
+
   # get the search terms and save them in the options object
   options.terms = getSearchTerms(options.words_file)
-      
+
   # run the different processes
   pwd = os.getcwd()
   pids=set()
@@ -272,7 +273,7 @@ def main(argv=None):
     print "Sound server is running on'%s'" % (options.chuck_ip)
 
 
-  
+
   # wait for all subprocesses to end
   try:
     while pids:

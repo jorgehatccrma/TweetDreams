@@ -37,10 +37,10 @@ url_pattern = re.compile('(https?://)(www\.)?([a-zA-Z0-9_%\.]*)([a-zA-Z]{2})?((/
 def searchTweets(username, password, terms):
   global common
   while True:
-    try:      
+    try:
       # This was an old hack, but I don't think we use it anymore
       #terms = common.keywords.union(common.search_terms.union(common.exclusion_terms))
-      
+
       common.log("Starting connection ...\n")
       ts = tweetstream.FilterStream(username, password, track=terms)
       with ts as stream:
@@ -89,41 +89,41 @@ def printTweet(tweet):
       common.log("Got tweet from <anonymous> : " + text + "\n")
 
 # handle an incomming tweet
-def parseTweet(tweet):  
+def parseTweet(tweet):
   global url_patter, common
   # sys.stdout.write('.')
   # sys.stdout.flush()
-  
+
   # ignore retweeted messages
   if tweet.has_key('retweeted'):
     if tweet['retweeted']: return
-  
+
   # TODO: should we filter out non-english messages?
-  # in theory we could use the 'lang' attibute, but many non-english 
+  # in theory we could use the 'lang' attibute, but many non-english
   # tweets use lang=en anyways, so is not very robust.
   # A more scientific was is to use a language detection tool, such as https://github.com/saffsd/langid.py
-  
+
   if tweet.has_key('text'):
     # filter out any URL in the tweet
     tweet['text'] = re.sub(url_pattern, '', tweet['text'])
     #replace &gt and &lt (TODO: are there other special characters for Twitter? Should we use some generic HTML decoding?)
     tweet['text'] = tweet['text'].replace('&lt;','<')
     tweet['text'] = tweet['text'].replace('&gt;','>')
-        
+
     if tweet.has_key('user') and tweet['user'].has_key('screen_name'):
       tweet['text'] = tweet['user']['screen_name'].encode('utf-8') + ": " + tweet['text']
     else:
       tweet['text'] = "anonymous: " + tweet['text']
-    
-    # For some reason, sometimes we get tweets without any relevant word (why?). 
-    # We need to check for that case. Also, we need to distinguish "local" tweets from "world" 
+
+    # For some reason, sometimes we get tweets without any relevant word (why?).
+    # We need to check for that case. Also, we need to distinguish "local" tweets from "world"
     # tweets
     irrelevant = True
     for term in common.search_terms:
       if tweet['text'].lower().find(term.lower()) >= 0:
         irrelevant = False
         break
-    
+
     tweet['local'] = 0
     for term in common.keywords:
       if tweet['text'].lower().find(term.lower()) >= 0:
@@ -131,8 +131,8 @@ def parseTweet(tweet):
         tweet['local'] = 1
         break
 
-    if irrelevant: return    
-    
+    if irrelevant: return
+
     if tweet['local']:
       common.keywordTweetsQueue.append(tweet)
     else:
@@ -149,7 +149,7 @@ def parseTweet(tweet):
 #####################################################
 
 
-def waitSomeTime():  
+def waitSomeTime():
   time.sleep(10)
 
 
@@ -158,29 +158,34 @@ def main():
   global osc
 
   # username and password used for autentication
-  if len(sys.argv) < 3: 
+  if len(sys.argv) < 3:
     print "I need valid twitter account credentials!"
     return 1
   username = sys.argv[1]
   password = sys.argv[2]
 
+  if len(sys.argv) > 3:
+    common.register(sys.argv[3])
+
+  common.log( "Clients: " + "\n".join(common.clients))
+
   # Start the thread that handles incomming OSC messages
   osc.start()
   common.general_dispatcher.start()
   common.keyword_dispatcher.start()
-    
+
   # dramatic pause!
   waitSomeTime()
 
   # start initial (fake) tweets
-  common.initial_tweets.start()  
-  
-  # Start the streaming  
-  terms = set(sys.argv[3:])
+  common.initial_tweets.start()
+
+  # Start the streaming
+  terms = set(sys.argv[4:])
   searchTweets(username, password, terms)
-  
+
 def killAll():
-  # Remember to stop any Thread you might have running 
+  # Remember to stop any Thread you might have running
   # (you must implement a 'running' attribute in the Thread)
   if osc: osc.running = False
   if common.general_dispatcher: common.general_dispatcher.running = False

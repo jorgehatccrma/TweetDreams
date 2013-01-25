@@ -11,18 +11,18 @@ class OSCManager(threading.Thread):
 
   # OSC server
   server = liblo.Server()
-  
+
   # constructor
   def __init__(self, port=8888):
-    
+
     # create server, listening on port 8888 by default
     try:
       self.server = liblo.Server(port)
     except liblo.ServerError, err:
       common.log(str(err) + "\n")
       sys.exit()
-      
-    # register callback to register/unregister OSC clients (computers that will receive 
+
+    # register callback to register/unregister OSC clients (computers that will receive
     # the messages when a new tweet arrives
     self.server.add_method("/twt/register", 's', twt_register_callback)
     self.server.add_method("/twt/unregister", 's', twt_unregister_callback)
@@ -43,9 +43,9 @@ class OSCManager(threading.Thread):
 
     # register a fallback for unhandled messages
     self.server.add_method(None, None, fallback)
-    
+
     self.running = False
-    
+
     # call the thread initializer
     threading.Thread.__init__(self)
 
@@ -56,16 +56,16 @@ class OSCManager(threading.Thread):
     while self.running:
       #check for messages every 100 ms
       self.server.recv(100)
-    
-      
+
+
   def register_callback(self, message, types, callback, data = None):
     if data == None:
       # register method without passing user data to the callback
       self.server.add_method(message, types, callback)
     else:
       # register method passing user data to the callback
-      self.server.add_method(message, types, callback, data)      
-      
+      self.server.add_method(message, types, callback, data)
+
 #/twt/newNode, id, closest_neighbord, distance (0-1), twt_text, [i i f s]
   def sendNewNode(self, port, msgArgs, msgTypes):
     msg = liblo.Message("/twt/newNode")
@@ -78,10 +78,11 @@ class OSCManager(threading.Thread):
       except:
         common.log(str(err) + "\n")
       liblo.send(target, msg)
+      print "sending " + str(msg)
 
 
 
-#/twt/triggerNode echo_id, node_id, time, hop_level, [i i f i]      
+#/twt/triggerNode echo_id, node_id, time, hop_level, [i i f i]
   def triggerNodes(self, port, echo_id, node_delay, hop_level):
     msg = liblo.Message("/twt/triggerNode")
     for key in node_delay:
@@ -90,6 +91,7 @@ class OSCManager(threading.Thread):
         msg.add((t, a))
         #common.log("argument (%s): %s\n" % (t, a))
       for client in common.clients:
+        common.log("client: " + str(client) + "\n")
         try:
           target = liblo.Address(client, port)
         except:
@@ -97,7 +99,7 @@ class OSCManager(threading.Thread):
         liblo.send(target, msg)
 
 
-      
+
 
 # Callbacks (need to be defined outside the class)
 
@@ -112,7 +114,7 @@ def twt_register_callback(path, args):
   common.register(ip_str)
   common.showClients()
 
-    
+
 def twt_unregister_callback(path, args):
   ip_str = args[0]
   common.unregister(ip_str)
@@ -144,7 +146,7 @@ def twt_delay_down_callback(path, args):
   else:
     common.log("*** Lower limit reached. Delay not changed\n")
 
-  
+
 def twt_start_searching_callback(path, args):
   common.waitingForChuck = False
   common.waitingForProcessing = False
@@ -163,7 +165,7 @@ def twt_add_search_term_callback(path, args):
     common.connection = False
     common.newTweetsQueue.clear()
     #send_search_term(args[0])
-    
+
 
 
 def twt_remove_search_term_callback(path, args):
@@ -182,7 +184,7 @@ def twt_update_tweet_dequeue_time_callback(path, args):
     common.keyword_dispatcher.high = args[1]
     if common.keyword_dispatcher.low < common.lower_dequeuing_limit:
       common.keyword_dispatcher.low = common.lower_dequeuing_limit
-    if common.keyword_dispatcher.high < common.keyword_dispatcher.low: 
+    if common.keyword_dispatcher.high < common.keyword_dispatcher.low:
       common.keyword_dispatcher.high = common.keyword_dispatcher.low
     common.log("changing local dequeing times %.2f, %.2f\n" % (common.keyword_dispatcher.low, common.keyword_dispatcher.high))
   else:
@@ -190,7 +192,7 @@ def twt_update_tweet_dequeue_time_callback(path, args):
     common.general_dispatcher.high = args[1]
     if common.general_dispatcher.low < common.lower_dequeuing_limit:
       common.general_dispatcher.low = common.lower_dequeuing_limit
-    if common.general_dispatcher.high < common.general_dispatcher.low: 
+    if common.general_dispatcher.high < common.general_dispatcher.low:
       common.general_dispatcher.high = common.general_dispatcher.low
     common.log("changing global dequeing times %.2f, %.2f\n" % (common.general_dispatcher.low, common.general_dispatcher.high))
 
@@ -216,9 +218,9 @@ def send_keyword_term(term, port=8891):
     except:
       common.log(str(err) + "\n")
     liblo.send(target, msg)
-  
-  
-  
+
+
+
 def send_search_term(term, remove=False, port=8891):
   msg = liblo.Message("/twt/newsearchTerm")
   if remove: msg = liblo.Message("/twt/removesearchTerm")
@@ -231,4 +233,4 @@ def send_search_term(term, remove=False, port=8891):
     except:
       common.log(str(err) + "\n")
     liblo.send(target, msg)
-  
+

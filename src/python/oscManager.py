@@ -75,7 +75,6 @@ class OSCManager(threading.Thread):
             except Exception, err:
                 common.log(str(err) + "\n")
             liblo.send(target, msg)
-            print "sending " + str(msg)
 
     #/twt/triggerNode echo_id, node_id, time, hop_level, [i i f i]
     def triggerNodes(self, port, echo_id, node_delay, hop_level):
@@ -86,7 +85,6 @@ class OSCManager(threading.Thread):
                 msg.add((t, a))
                 #common.log("argument (%s): %s\n" % (t, a))
             for client in common.clients:
-                common.log("client: " + str(client) + "\n")
                 try:
                     target = liblo.Address(client, port)
                 except Exception, err:

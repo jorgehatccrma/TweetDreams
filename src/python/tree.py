@@ -1,5 +1,3 @@
-# TODO: I don't think we are using this file at all!
-
 # The tree can be implemented easily by abstracting the class Node
 # See the example at the bottom
 
@@ -20,12 +18,14 @@ class Node(object):
         obj.parent = self
 
     def display(self, level=0):
+        # print str(self.tweet)
         for c in self.children:
             c.display(level + 2)
 
     def traverseUp(self, level=0):
         if self.parent == None:
             return
+        # print str(self.tweet)
         self.parent.traverseUp(level + 2)
 
     def numChildren(self):

@@ -47,7 +47,11 @@ public class Twt extends PApplet{
 	public float x_rotational_speed = 0;
 
 	private float initial_zoom = 2500.0f;
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> d.school changes
 	private int search_terms_font_size = 5;
 	protected float new_tweets_stack_font_size = 2.5f;
 

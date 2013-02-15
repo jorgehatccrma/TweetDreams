@@ -111,7 +111,7 @@ public class Twt extends PApplet{
 		// SYSTEM SPECIFIC HINTS
 		hint( ENABLE_NATIVE_FONTS );
 		hint( DISABLE_DEPTH_TEST );
-		hint( ENABLE_OPENGL_4X_SMOOTH );
+		// hint( ENABLE_OPENGL_4X_SMOOTH );
 
 
     // if (args.length >= 2) {
@@ -366,46 +366,57 @@ public class Twt extends PApplet{
 		// interpolate parameters
 		slewParams();
 
-		// place the camera
-		camera(	camera.x(), camera.y(), camera.z(),
-				width/2.0f, height/2.0f, 0.0f,
-				0.0f, 1.0f, 0.0f );
-
-		// advance the physics simulation
-		try {
-			particle_system.tick();
-		} catch (Exception e) {
-			println("physics engine exception raised!");
-			//e.printStackTrace();
+		// setereoscopic rendering
+		int num_eyes = 1;
+		boolean stereoscopy = true;
+		if (stereoscopy) {
+			num_eyes = 2;
 		}
 
-		if(animate_camera) {
-			pushMatrix();
-			translate(width/2, 0, 0);
-			rotateY(angleY);
-			translate(-width/2, 0, 0);
-			translate(0, height/2, 0);
-			rotateX(angleX);
-			translate(0, -height/2, 0);
-		}
+		int i;
+		for (i=0; i<num_eyes; i++) {
 
+			// place the camera
+			camera(	camera.x() + (int)((float)i-0.5)*100, camera.y(), camera.z(),
+					width/2.0f, height/2.0f, 0.0f,
+					0.0f, 1.0f, 0.0f );
 
-		// Draw links
-		synchronized(links) {
-			Iterator<Link> lit = links.iterator();
-			while(lit.hasNext()) {
-				lit.next().draw();
+			// advance the physics simulation
+			try {
+				particle_system.tick();
+			} catch (Exception e) {
+				println("physics engine exception raised!");
+				//e.printStackTrace();
 			}
-		}
 
-		// Draw nodes
-		Iterator<Tweet> it = tweetMap.values().iterator();
-		while(it.hasNext()) {
-			it.next().draw();
-		}
+			if(animate_camera) {
+				pushMatrix();
+				translate(width/2, 0, 0);
+				rotateY(angleY);
+				translate(-width/2, 0, 0);
+				translate(0, height/2, 0);
+				rotateX(angleX);
+				translate(0, -height/2, 0);
+			}
 
-		if(animate_camera) {
-			popMatrix();
+
+			// Draw links
+			synchronized(links) {
+				Iterator<Link> lit = links.iterator();
+				while(lit.hasNext()) {
+					lit.next().draw();
+				}
+			}
+
+			// Draw nodes
+			Iterator<Tweet> it = tweetMap.values().iterator();
+			while(it.hasNext()) {
+				it.next().draw();
+			}
+
+			if(animate_camera) {
+				popMatrix();
+			}
 		}
 
 	}
@@ -621,13 +632,13 @@ public class Twt extends PApplet{
 		}
 	}
 
-  // overwrite the default param() function
-  // if we're not online (i.e. running as application), the new function
-  // will use the Hashtable to find the param
-  public String param(String id) {
-    if (online) return super.param(id);
-    else return (String)params.get(id);
-  }
+	// overwrite the default param() function
+	// if we're not online (i.e. running as application), the new function
+	// will use the Hashtable to find the param
+	public String param(String id) {
+		if (online) return super.param(id);
+		else return (String)params.get(id);
+	}
 
 	// adds Java Application output, "--present" is full screen mode
 	public static void main(String args[])
@@ -637,28 +648,29 @@ public class Twt extends PApplet{
     // The command lines must be in the following form:
     // >> java Twt width=800 height=600
 
-    String[] newArgs = new String[args.length+5];
+    String[] newArgs = new String[args.length+6];
     int i;
     for(i=0; i<args.length; i++) {
-      newArgs[i]=args[i];
-      if (args[i].indexOf("=")!=-1) {
-        String[] pair=split(args[i], '=');
-        params.put(pair[0],pair[1]);
+		newArgs[i]=args[i];
+		if (args[i].indexOf("=")!=-1) {
+	        String[] pair=split(args[i], '=');
+	        params.put(pair[0],pair[1]);
       }
     }
     newArgs[i+0] = "--hide-stop";
-    newArgs[i+1] = "--display=1";
+    newArgs[i+1] = "--display=0";
     newArgs[i+2] = "--present";
     // newArgs[i+3] = "--bgcolor=#222222";
     newArgs[i+3] = "--bgcolor=#000000";
-    newArgs[i+4] = Twt.class.getName();
+    newArgs[i+4] = "--full-screen";
+    newArgs[i+5] = Twt.class.getName();
 
     // apply default width and height if necessary
     if (!params.containsKey("width")) {
-      params.put("width","800");
+		params.put("width","800");
     }
     if (!params.containsKey("height")) {
-      params.put("height","600");
+		params.put("height","600");
     }
 
     // pass on to PApplet entry point

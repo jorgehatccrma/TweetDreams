@@ -158,7 +158,7 @@ def compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder):
     jars.append(os.path.join(jarsFolder, 'physics.jar'))
     jars.append(os.path.join(jarsFolder, 'shapetween.jar'))
     jars.append(os.path.join(openGLFolder, 'opengl.jar'))
-    jars.append(os.path.join(openGLFolder, 'jogl.jar'))
+    jars.append(os.path.join(openGLFolder, 'jogl-all.jar'))
     jars.append(os.path.join(openGLFolder, 'gluegen-rt.jar'))
 
     # compile the java app

@@ -11,11 +11,11 @@
 0 => int twtSynthCtlLocalDebug;         // turn on/off debug messages
 0 => int twtSynthCtlLocalDebug2;        // turn on/off debug messages
 dac.channels() => int gNumChans;        // number of output channels
+if (gNumChans > 4) 4 => gNumChans;      // max 4 channels
+if (gNumChans < 2) 2 => gNumChans;      // min 2 channels
 1 => int gPlayLocal;                    // flag to play local sounds
 //2 => int dacOffset;                     // which dac output to start on
 0 => int dacOffset;                     // which dac output to start on
-
-<<< "**********", gNumChans, "************" >>>;
 
 //50 => int gNumSynths;                 // number of synth nodes
 100 => int gNumSynths;                  // number of synth nodes

@@ -43,6 +43,16 @@ def optionParser():
                       default="768", type="int",
                       help="Height of the visualizer canvas")
 
+    parser.add_option('-n', '--num-channels',
+                      action="store", dest="num_channels",
+                      default="2", type="int",
+                      help="Number of audio channels")
+
+    parser.add_option('-d', '--dac',
+                      action="store", dest="dac",
+                      default="0", type="int",
+                      help="Audio output device to use")
+
     # flag-options to enable/disbale different parts of TweetDreams
     flags_opts = optparse.OptionGroup(parser, "Flags",
                                       "This options will enable/disable locally running the different parts of TweetDreams.")
@@ -103,6 +113,8 @@ def startChuckServer(options, pwd):
         terms_as_chuck_args = ":" + terms_as_chuck_args
     command.append('--bufsize2048')
     command.append('--srate44100')
+    command.append('--dac%d' % (options.dac,))
+    command.append('-c%d' % (options.num_channels,))
     command.append('twtNodeSynth3.ck')
     command.append('twtSynthControlLOCAL3.ck')
     command.append("twtSynthControlMASTER.ck:%s:%s:%s%s" % (options.python_ip, options.java_ip, options.local_word, terms_as_chuck_args))
@@ -166,6 +178,7 @@ def compileJavaApp(pwd, jarsFolder, openGLFolder, srcFolder):
     compileCommand = ['javac']
     compileCommand.append('-g')
     # compileCommand.append('-Xlint')
+    # compileCommand.append('-Xlint:deprecation')
     # compileCommand.append('-verbose')
     compileCommand.append('-classpath')
     compileCommand.append(':'.join(jars))

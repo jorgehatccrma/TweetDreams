@@ -675,8 +675,8 @@ public class Twt extends PApplet{
 			params.put("height","600");
 	    }
 
-	    // pass on to PApplet entry point
-	    PApplet.main(newArgs);
+	    // pass on to PApplet entry point (note that it takes a String[], not an ArrayList<String>)
+	    PApplet.main(newArgs.toArray(new String[newArgs.size()]));
 	}
 
 

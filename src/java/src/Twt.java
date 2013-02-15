@@ -74,7 +74,7 @@ public class Twt extends PApplet{
 	private boolean vertical_term_list = false;
 
 	// Hack
-  private static Hashtable<String,String> params = new Hashtable<String,String>();
+    private static Hashtable<String,String> params = new Hashtable<String,String>();
 
 	// INSTANCE ATTRIBUTES & METHODS
 	OscP5 oscP5;

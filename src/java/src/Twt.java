@@ -640,42 +640,43 @@ public class Twt extends PApplet{
 		else return (String)params.get(id);
 	}
 
-	// adds Java Application output, "--present" is full screen mode
+	// show the Java Application in full screen mode
 	public static void main(String args[])
 	{
-    // we'll read the app's width and height from command line args.
-    // See: http://wiki.processing.org/w/Setting_width/height_dynamically
-    // The command lines must be in the following form:
-    // >> java Twt width=800 height=600
+	    // we'll read the app's width and height from command line args.
+	    // See: http://wiki.processing.org/w/Setting_width/height_dynamically
+	    // The command lines must be in the following form:
+	    // >> java Twt width=800 height=600
 
-    String[] newArgs = new String[args.length+6];
-    int i;
-    for(i=0; i<args.length; i++) {
-		newArgs[i]=args[i];
-		if (args[i].indexOf("=")!=-1) {
-	        String[] pair=split(args[i], '=');
-	        params.put(pair[0],pair[1]);
-      }
-    }
-    newArgs[i+0] = "--hide-stop";
-    newArgs[i+1] = "--display=0";
-    newArgs[i+2] = "--present";
-    // newArgs[i+3] = "--bgcolor=#222222";
-    newArgs[i+3] = "--bgcolor=#000000";
-    newArgs[i+4] = "--full-screen";
-    newArgs[i+5] = Twt.class.getName();
 
-    // apply default width and height if necessary
-    if (!params.containsKey("width")) {
-		params.put("width","800");
-    }
-    if (!params.containsKey("height")) {
-		params.put("height","600");
-    }
+		ArrayList<String> newArgs = new ArrayList<String>();
+	    int i;
+	    for(i=0; i<args.length; i++) {
+			// newArgs[i]=args[i];
+			newArgs.add(args[i]);
+			if (args[i].indexOf("=")!=-1) {
+		        String[] pair=split(args[i], '=');
+		        params.put(pair[0],pair[1]);
+	      }
+	    }
 
-    // pass on to PApplet entry point
-    PApplet.main(newArgs);
+	    newArgs.add("--hide-stop");
+	    newArgs.add("--display=0");
+	    // newArgs.add("--present");
+	    newArgs.add("--bgcolor=#000000");
+	    newArgs.add("--full-screen");
+	    newArgs.add(Twt.class.getName());
 
+	    // apply default width and height if necessary
+	    if (!params.containsKey("width")) {
+			params.put("width","800");
+	    }
+	    if (!params.containsKey("height")) {
+			params.put("height","600");
+	    }
+
+	    // pass on to PApplet entry point
+	    PApplet.main(newArgs);
 	}
 
 

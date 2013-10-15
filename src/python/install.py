@@ -81,6 +81,33 @@ def easyInstall(package):
     sys.stdout.flush()
 
 
+def pipInstall(package):
+    """
+    Generic method to install a package using the pip, only if
+    required.
+    """
+    sys.stdout.write('\nSearching for installed %s ... ' % package)
+    sys.stdout.flush()
+    notFound = False
+    try:
+        __import__(package)
+        sys.stdout.write('[FOUND]')
+    except ImportError:
+        sys.stdout.write('[NOT FOUND]')
+        notFound = True
+
+    if notFound:
+        sys.stdout.write('\nInstalling %s:\n' % package)
+        try:
+            call(["pip", "install", package])
+        except:
+            print "\nUnexpected error when trying to pip install %s:\n" % (package), sys.exc_info()[0], sys.exc_info()[1]
+            raise
+
+    sys.stdout.flush()
+
+
+
 def compileAndInstallLiblo():
     """
     Method that unpacks liblo source code, compiles it and installs it in the
@@ -162,9 +189,8 @@ def installDependencies():
     """
     sys.stdout.write('Installing dependencies:\n')
     try:
-        import easy_install
         easyInstall('tweetstream')
-        easyInstall('numpy')
+        pipInstall('numpy')
         # since pyliblo depends on liblo (c library), but we want an isolated
         # install, we need to handle this differntly
         compileAndInstallLiblo()

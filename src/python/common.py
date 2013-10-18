@@ -20,6 +20,9 @@ remote_port = 8890
 
 
 connection = False
+MIN_RECON_PAUSE = 1 # in seconds
+reconnection_pause = 1  # in seconds (used to scale back in case of recurrent connection problems)
+MAX_RECON_PAUSE = 60*10 # 10 minutes!
 triggerLengthThreshold = 8
 receivedTweetIDs = set([])
 nodes = []

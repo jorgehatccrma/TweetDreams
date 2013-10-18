@@ -12,6 +12,7 @@ import sys
 # import random
 import traceback
 import time
+from datetime import datetime
 import dispatcher
 import re
 # from collections import deque
@@ -35,15 +36,17 @@ url_pattern = re.compile('(https?://)(www\.)?([a-zA-Z0-9_%\.]*)([a-zA-Z]{2})?((/
 # Different methods to consume the stream of tweets
 #####################################################
 # only tweets containing at least one of the provided terms
-def searchTweets(username, password, terms):
+def searchTweets(consumer_key, consumer_secret, access_token, access_secret, terms):
     global common
+    last_connection = None
     while True:
         try:
             # This was an old hack, but I don't think we use it anymore
             #terms = common.keywords.union(common.search_terms.union(common.exclusion_terms))
 
             common.log("Starting connection ...\n")
-            ts = tweetstream.FilterStream(username, password, track=terms)
+            ts = tweetstream.FilterStream(consumer_key, consumer_secret, access_token, access_secret, track=terms)
+            last_connection = datetime.now()
             with ts as stream:
                 if stream:
                     common.connection = True
@@ -52,11 +55,24 @@ def searchTweets(username, password, terms):
                             common.receivedTweetIDs.add(tweet['id'])
                             parseTweet(tweet)
         except tweetstream.ConnectionError, e:
-                common.log("Disconnected from twitter. Reason: %s\n" % (e.reason))
+                common.log("Twitter ConnectionError. Reason: %s\n" % (e.reason))
                 common.log("It should reconnect automatically\n")
         except tweetstream.AuthenticationError, e:
-                common.log("Disconnected from twitter. Reason: %s\n" % (e))
+                common.log("Twitter AuthenticationError. Reason: %s\n" % (e))
                 common.log("It should reconnect automatically\n")
+
+        # hacky!
+        time_from_last_attempt = (datetime.now() - last_connection).seconds
+        if time_from_last_attempt > common.MAX_RECON_PAUSE:
+            common.reconnection_pause = common.MIN_RECON_PAUSE
+
+        # Pause before trying to reconnect
+        common.log("Will wait %d secons before attempting to reconnect ..." % (common.reconnection_pause))
+        time.sleep(common.reconnection_pause)
+        if time_from_last_attempt < common.MAX_RECON_PAUSE:
+            common.reconnection_pause *= 2
+
+
     common.log("Twitter stream stopped\n")
 
 
@@ -180,7 +196,12 @@ def main():
 
     # Start the streaming
     terms = set(sys.argv[4:])
-    searchTweets(username, password, terms)
+    # searchTweets(username, password, terms)
+    consumer_key = 'FILL ME'
+    consumer_secret = 'FILL ME'
+    access_token = 'FILL ME'
+    access_secret = 'FILL ME'
+    searchTweets(consumer_key, consumer_secret, access_token, access_secret, terms)
 
 
 def killAll():

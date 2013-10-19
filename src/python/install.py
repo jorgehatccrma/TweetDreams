@@ -189,7 +189,7 @@ def installDependencies():
     """
     sys.stdout.write('Installing dependencies:\n')
     try:
-        easyInstall('tweetstream')
+        pipInstall('twitterapi')
         pipInstall('numpy')
         # since pyliblo depends on liblo (c library), but we want an isolated
         # install, we need to handle this differntly

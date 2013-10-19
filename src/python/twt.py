@@ -3,7 +3,7 @@
 """
 """
 
-import tweetstream
+from TwitterAPI import TwitterAPI
 import oscManager
 import common
 import initialTweets
@@ -45,20 +45,60 @@ def searchTweets(consumer_key, consumer_secret, access_token, access_secret, ter
             #terms = common.keywords.union(common.search_terms.union(common.exclusion_terms))
 
             common.log("Starting connection ...\n")
-            ts = tweetstream.FilterStream(consumer_key, consumer_secret, access_token, access_secret, track=terms)
             last_connection = datetime.now()
-            with ts as stream:
-                if stream:
-                    common.connection = True
-                    for tweet in stream:
-                        if ('id' in tweet) and (tweet['id'] not in common.receivedTweetIDs):
-                            common.receivedTweetIDs.add(tweet['id'])
-                            parseTweet(tweet)
-        except tweetstream.ConnectionError, e:
-                common.log("Twitter ConnectionError. Reason: %s\n" % (e.reason))
-                common.log("It should reconnect automatically\n")
-        except tweetstream.AuthenticationError, e:
-                common.log("Twitter AuthenticationError. Reason: %s\n" % (e))
+            api = TwitterAPI(consumer_key, consumer_secret, access_token, access_secret)
+            r = api.request('statuses/filter', {'track':','.join(terms)})
+            common.log("Response Status Code: %d" % (r.status_code))
+
+            # see https://dev.twitter.com/docs/streaming-apis/connecting for details about this code
+            if r.status_code == 200:  # Success
+                common.connection = True
+                for tweet in r.get_iterator():
+                    if ('id' in tweet) and (tweet['id'] not in common.receivedTweetIDs):
+                        common.receivedTweetIDs.add(tweet['id'])
+                        parseTweet(tweet)
+            elif r.status_code == 401:  # Unauthorized
+                common.log(("HTTP authentication failed due to either:\n"
+                            "\t* Invalid basic auth credentials, or an invalid OAuth request;\n"
+                            "\t* Out-of-sync timestamp in your OAuth request (the response body will indicate this);\n"
+                            "\t* Too many incorrect passwords entered or other login rate limiting.\n"))
+                return
+            elif r.status_code == 403:  # Forbidden
+                common.log("The connecting account is not permitted to access this endpoint.\n")
+                return
+            elif r.status_code == 404:  # Unknown
+                common.log("There is nothing at this URL, which means the resource does not exist.\n")
+                return
+            elif r.status_code == 406:  # Not Acceptable
+                common.log(("At least one request parameter is invalid. For example, the filter endpoint returns this status if:\n"
+                            "\t* The track keyword is too long or too short;\n"
+                            "\t* An invalid bounding box is specified;\n"
+                            "\t* Neither the track nor follow parameter are specified;\n"
+                            "\t* The follow user ID is not valid.\n"))
+                return
+            elif r.status_code == 413:  # Too Long
+                common.log(("A parameter list is too long. For example, the filter endpoint returns this status if:\n"
+                            "\t* More track values are sent than the user is allowed to use;\n"
+                            "\t* More bounding boxes are sent than the user is allowed to use;\n"
+                            "\t* More follow user IDs are sent than the user is allowed to follow.\n"))
+                return
+            elif r.status_code == 416:  # Range Unacceptable
+                common.log(("For example, an endpoint returns this status if:\n"
+                            "\t* A count parameter is specified but the user does not have access to use the count parameter;\n"
+                            "\t* A count parameter is specified which is outside of the maximum/minimum allowable values.\n"))
+                return
+            elif r.status_code == 420:  # Rate Limited
+                common.log(("The client has connected too frequently. For example, an endpoint returns this status if:\n"
+                            "\t* A client makes too many login attempts in a short period of time;\n"
+                            "\t* Too many copies of an application attempt to authenticate with the same credentials.\n"))
+                return
+            elif r.status_code == 503:  # Service Unavailable
+                common.log(("A streaming server is temporarily overloaded;\n"
+                            "Attempt to make another connection, keeping in mind the \n"
+                            "connection attempt rate limiting and possible DNS caching in your client.\n"))
+                time.sleep(60*5)  # wait 5 minutes
+        except Exception, e:
+                common.log("Twitter ConnectionError. Reason: %s\n" % (e))
                 common.log("It should reconnect automatically\n")
 
         # hacky!
@@ -67,7 +107,9 @@ def searchTweets(consumer_key, consumer_secret, access_token, access_secret, ter
             common.reconnection_pause = common.MIN_RECON_PAUSE
 
         # Pause before trying to reconnect
-        common.log("Will wait %d secons before attempting to reconnect ..." % (common.reconnection_pause))
+        # FIXME: this was a quick hack! We should follow the guidelines suggested in
+        # https://dev.twitter.com/docs/streaming-apis/connecting
+        common.log("Will wait %d seconds before attempting to reconnect ..." % (common.reconnection_pause))
         time.sleep(common.reconnection_pause)
         if time_from_last_attempt < common.MAX_RECON_PAUSE:
             common.reconnection_pause *= 2
@@ -196,11 +238,11 @@ def main():
 
     # Start the streaming
     terms = set(sys.argv[4:])
-    # searchTweets(username, password, terms)
-    consumer_key = 'FILL ME'
-    consumer_secret = 'FILL ME'
-    access_token = 'FILL ME'
-    access_secret = 'FILL ME'
+
+    consumer_key = ''
+    consumer_secret = ''
+    access_token = ''
+    access_secret = ''
     searchTweets(consumer_key, consumer_secret, access_token, access_secret, terms)
 
 

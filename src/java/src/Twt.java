@@ -649,8 +649,9 @@ public class Twt extends PApplet{
     newArgs[i+0] = "--hide-stop";
     newArgs[i+1] = "--display=1";
     newArgs[i+2] = "--present";
-    // newArgs[i+3] = "--bgcolor=#222222";
+    //newArgs[i+3] = "--bgcolor=#CD2824";
     newArgs[i+3] = "--bgcolor=#000000";
+    // newArgs[i+3] = "--bgcolor=#FFFFFF";
     newArgs[i+4] = Twt.class.getName();
 
     // apply default width and height if necessary

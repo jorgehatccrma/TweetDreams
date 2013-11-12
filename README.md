@@ -81,6 +81,30 @@ There are many other arguments that can be passed to this script. For a complete
 	> python startDreaming.py -h
 
 
+5) Interactions
+---------------
+
+### Audio (ChucK)
+
+ * `1/2`: available waveforms for next tree
+ * `3/4`: available melodies for next tree
+ * `5/6`: the timing for the next tree
+ * `7/8`: the mode for the next tree (currently I think should stay in one mode)
+ * `9/0`: increase/decrease the dry level for all sounds
+
+### Tweets (Python)
+
+ * `g/h`: inc/dec min global queue time (by 100 msec)
+ * `j/k`: inc/dec max global queue time (by 100 msec)
+ * `z,x,v,b,n,m`: (bottom row of keyboard) add/remove search terms
+
+### Visuals (Java+Processing)
+
+ * `i/o`: zoom in/out
+ * `w/a`: horizontal plane spin
+ * `a/d`: vertical plane spin
+
+
 
 Authors
 =======

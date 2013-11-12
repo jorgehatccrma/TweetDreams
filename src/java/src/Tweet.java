@@ -47,7 +47,7 @@ public class Tweet {
 	private String[] words;
 	private float[] word_angles;
 	private float max_movement_allowed = 500f;
-	private float newFadeOutTime = 3.5f;
+	private float newFadeOutTime = 6.5f;
 	private float triggerFadeOutTime = 3f;
 
 	protected Particle particle;
@@ -143,7 +143,7 @@ public class Tweet {
 		BezierShaper bezier = new BezierShaper(Shaper.SIGMOID, 1);
 		// TODO: play with these params!!!
 		bezier.setInHandle( 0.9f, 0f );
-		bezier.setOutHandle( 0f, -0.2f );
+		bezier.setOutHandle( 0.4f, -0.2f );
 		bezier.clamp();
 		fade_out.setEasing(bezier);
 		//fade_out.setEasingMode(Shaper.IN);

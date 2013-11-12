@@ -492,9 +492,10 @@ public class Twt extends PApplet{
 
 		float zoom_factor = camera_target.z()/initial_zoom;
 
-		float mass = node_mass
-		if(tweetMap.containsKey(neighbor_id))
-			mass = node_mass/(tweetMap.get(neighbor_id).level + 1)
+		float mass = node_mass;
+		if(tweetMap.containsKey(neighbor_id)) {
+			mass = node_mass/(tweetMap.get(neighbor_id).level + 1);
+		}
 
 		Particle p = particle_system.makeParticle(mass,
 				zoom_factor*random(-width/1.5f, width*1.3f),

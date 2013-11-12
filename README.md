@@ -104,6 +104,18 @@ There are many other arguments that can be passed to this script. For a complete
  * `w/a`: horizontal plane spin
  * `a/d`: vertical plane spin
 
+You can also control the following parameter using a MIDI device:
+
+ * zoom
+ * spin-x
+ * spin-y
+ * root-length
+ * tree-length
+ * text-size
+ * "trace"
+ * drag (viscosity)
+
+For details dig into `src/java/src/MidiManager.java`.
 
 
 Authors

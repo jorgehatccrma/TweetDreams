@@ -142,8 +142,8 @@ public class Tweet {
 
 		BezierShaper bezier = new BezierShaper(Shaper.SIGMOID, 1);
 		// TODO: play with these params!!!
-		bezier.setInHandle( 0.9f, 0f );
-		bezier.setOutHandle( 0.4f, -0.2f );
+		bezier.setInHandle( 0.93f, -0.41f );
+		bezier.setOutHandle( 0.0f, 1.0f );
 		bezier.clamp();
 		fade_out.setEasing(bezier);
 		//fade_out.setEasingMode(Shaper.IN);

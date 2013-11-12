@@ -141,7 +141,7 @@ public class Tweet {
 		fade_out.setPlayMode(Tween.ONCE);
 
 		BezierShaper bezier = new BezierShaper(Shaper.SIGMOID, 1);
-		// TODO: play with these params!!!
+		// TODO: play with these params!!! (use http://cubic-bezier.com/#.93,-0.41,0,1 to look at the easing curve)
 		bezier.setInHandle( 0.93f, -0.41f );
 		bezier.setOutHandle( 0.0f, 1.0f );
 		bezier.clamp();

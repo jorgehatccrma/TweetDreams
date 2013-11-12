@@ -3,11 +3,11 @@ import java.util.HashMap;
 import javax.sound.midi.*;
 public class MidiManager {
 
-	public static final int AKAI_MPD24 = 0; 
+	public static final int AKAI_MPD24 = 0;
 	public static final int MAUDIO_TRIGGER_FINGER = 1;
 	public static final int KORG_NANO_KONTROL = 2;
 	public static final int BEHRINGER_BCR2000 = 3;
-	
+
 	private static final int GRAVITY_X = 0;
 	private static final int GRAVITY_Y = 1;
 	private static final int GRAVITY_Z = 2;
@@ -25,7 +25,7 @@ public class MidiManager {
 	private static final int GLOBAL_ATTRACTION = 14;
 	private static final int GLOBAL_ATTRACTION_DISTANCE = 15;
 	private static final int ROOT_SPRING_K = 16;
-	private static final int ROOT_SPRING_DAMPENING = 17; 
+	private static final int ROOT_SPRING_DAMPENING = 17;
 	private static final int ROOT_SPRING_LENGTH = 18;
 	private static final int ROOT_ATTRACTION = 19;
 	private static final int ROOT_ATTRACTION_DISTANCE = 20;
@@ -34,17 +34,17 @@ public class MidiManager {
 	private static final int Z_RANDOM = 23;
 	private static final int Y_ROTATION_SPEED = 24;
 	private static final int X_ROTATION_SPEED = 25;
-	
+
 	private Twt parent;
 	private Transmitter transmitter;
 	private Receiver receiver;
 	private int surface;
-	
+
 	private HashMap<Integer, HashMap<Integer, Integer> > mappings;
-		
+
 	/**
 	 * Constructor for the MidiManager object.
-	 * 
+	 *
 	 * @param _parent    Parent class object import
 	 * @param _surface   Controller specific mappings
 	 * @param device_id  A sequential integer representing acquired MIDI devices
@@ -52,19 +52,19 @@ public class MidiManager {
 	public MidiManager(Twt _parent, int _surface, int device_id) {
 		parent = _parent;
 		surface = _surface;
-		
+
 		mappings = new HashMap<Integer, HashMap<Integer,Integer>>();
-		
+
 		populateMappings();
 		connectMidi(device_id);
 	}
 
 	/**
 	 * Connects to MIDI controller and sets up mappings.
-	 * 
+	 *
 	 * Scans for all available MIDI devices and opens a connection to one.  Sets up mappings from
 	 * various control parameters to MIDI controller numbers.
-	 * 
+	 *
 	 * @param device_id  A sequential integer representing acquired MIDI devices
 	 */
 	private void connectMidi(int device_id) {
@@ -72,13 +72,13 @@ public class MidiManager {
         	MidiDevice.Info[] midiDevices = MidiSystem.getMidiDeviceInfo();
         	//for(int i = 0; i < midiDevices.length; i++)
         	//	Twt.println(midiDevices[i].getVendor() + " " + midiDevices[i].getName() + " - " + midiDevices[i].getDescription());
-        	
+
         	if(device_id < midiDevices.length) {
         		Twt.println("Using " + midiDevices[device_id].getVendor() + " " + midiDevices[device_id].getName() );
         	} else {
         		Twt.println("The device_id " + device_id  + " exceeds the number of available MIDI devices (" + midiDevices.length  + ")");
         	}
-        	
+
         	MidiDevice midiDevice = MidiSystem.getMidiDevice(midiDevices[device_id]);
         	midiDevice.open();
         	transmitter = midiDevice.getTransmitter();
@@ -170,7 +170,7 @@ public class MidiManager {
 							parent.tracer_alpha = (int)(127-value)*2;
 							break;
 						case MidiManager.TEXT_SIZE:
-							parent.textSize = parent.minTextSize + (int)value*1.5f;
+							parent.textSize = parent.minTextSize + (int)value*2.5f;
 							break;
 						case MidiManager.Z_RANDOM:
 							parent.z_random_pos = (int)value*10;
@@ -199,11 +199,11 @@ public class MidiManager {
 		} catch (MidiUnavailableException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
 	}
-	
-		
+
+
 	/**
 	 * Create HashMap of controller MIDI mappings for a specific controller
 	 */
@@ -225,7 +225,7 @@ public class MidiManager {
 		map.put(51, -1);
 		map.put(41, -1);
 		mappings.put(MidiManager.AKAI_MPD24, map);
-		
+
 		// M-AUDIO TRIGGER FINGER mappings
 		map = new HashMap<Integer, Integer>();
 		map.put(0, MidiManager.GRAVITY_Y);
@@ -241,7 +241,7 @@ public class MidiManager {
 		map.put(12, -1);
 		map.put(16, -1);
 		mappings.put(MidiManager.MAUDIO_TRIGGER_FINGER, map);
-		
+
 		// KORG NANO CONTROL mappings
 		// SCENE 1 (of 4)
 		map =  new HashMap<Integer, Integer>();
@@ -301,7 +301,7 @@ public class MidiManager {
 		map.put(41, -1);
 
 		mappings.put(MidiManager.KORG_NANO_KONTROL, map);
-	
+
 	// BEHRINGER BCR2000 mappings
 	map =  new HashMap<Integer, Integer>();
 	// knobs 1-9
@@ -356,5 +356,5 @@ public class MidiManager {
 
 	mappings.put(MidiManager.BEHRINGER_BCR2000, map);
 }
-	
+
 }

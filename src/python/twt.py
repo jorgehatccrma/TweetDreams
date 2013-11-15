@@ -214,15 +214,8 @@ def main():
 
     global osc
 
-    # username and password used for authentication
-    if len(sys.argv) < 3:
-        print "I need valid twitter account credentials!"
-        return 1
-    username = sys.argv[1]
-    password = sys.argv[2]
-
-    if len(sys.argv) > 3:
-        common.register(sys.argv[3])
+    if len(sys.argv) > 1:
+        common.register(sys.argv[1])
 
     common.log("Clients: " + "\n".join(common.clients))
 
@@ -244,6 +237,7 @@ def main():
     consumer_secret = ''
     access_token = ''
     access_secret = ''
+
     searchTweets(consumer_key, consumer_secret, access_token, access_secret, terms)
 
 

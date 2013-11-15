@@ -123,14 +123,9 @@ def startChuckServer(options, pwd):
 
 def startPythonServer(options, pwd):
     """
-    Asks for a Twitter username and password and launches the tweet server
+    Launch the tweet server
     """
-    username = raw_input('Twitter Username: ')
-    password = getpass.getpass('Twitter Password: ')
-
     command = [os.path.join(pwd, 'src', 'python', 'twt.py')]
-    command.append(username)
-    command.append(password)
     command.append(options.chuck_ip)
     command.append(options.local_word)
     for term in options.terms:

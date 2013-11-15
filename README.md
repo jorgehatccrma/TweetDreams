@@ -67,17 +67,23 @@ know the IP addresses where the others are running.
 
 4) Run it
 ---------
+
+**Read this before you try to run it!** Since June, 2013, the Twitter API required oAuth authentication (the old username/password) method doesn't work any more. Since the source code is open, but out twitter dev accounts are not, the required `consumer_key`, `consumer_secret`, `access_token`, `access_secret` are not included in the source code. Given that scenario, to run *TweetDreams* you will need to get your own twitter dev account, and get these keys and tokens (it is free and easy, just go to [https://dev.twitter.com/](https://dev.twitter.com/) and follow the instructions). Once you get your keys and tokens, you will need to add the to `src/python/twt.py` (search for those terms, defined with empty strings and replace them accordingly).
+
+
+### Run Instructions
+
 To run *TweetDreams*, run the `startDreaming.py` script from the root folder:
 
 	> python startDreaming.py -l \#YourHashTag -j 192.168.1.2
 
 **Note:** the *backslash* (\\) is only necessary to escape the pound (#) symbol. If you don't want a pound symbol in you *local_term*, then you need to omit the \\.
 
-The above command and options will run the Python and Chuck server in the local machine and the Java visualizer in a remote machine (that's the default setting). If you want to run everything in the local machine, you can run the script with the following options:
+The above command and options will run the Python and Chuck server in the local machine and the Java visualizer in a remote machine (that's the default setting). If you want to run everything in the local machine, you can run the script with the following options (by default all IP addresses are set to `localhost`):
 
-    > python startDreaming.py -l \#music -T -S -V -j 127.0.0.1 -p 127.0.0.1 -c 127.0.0.1
+    > python startDreaming.py -l \#music -T -S -V
 
-**Note** if you do this, the visualizer will probably cover your terminal with a black screen. You will need to go to the terminal to enter your Twitter username/password to actually run *TweeDreams*. Once you enter the username/password, go back to the visualizer and enjoy!
+**Note** if you do this, the visualizer will probably cover your terminal with a black screen. You can (should) bring the terminal to the forefront to debug in case there's any issue.
 
 The above example will launch the tweets server (python) and sound (chuck) server locally (localhost) and will send OSC
 messages to the visualizer (java) app running at 192.168.1.2.

@@ -160,8 +160,7 @@ def parseTweet(tweet):
 
     if 'text' in tweet:
         # filter out any URL in the tweet
-        # tweet['text'] = re.sub(url_pattern, '', tweet['text'])
-        tweet['text'] = re.sub(url_pattern, '', unicode(tweet['text']).encode('utf-8'))
+        tweet['text'] = re.sub(url_pattern, '', tweet['text'])
         #replace &gt and &lt (TODO: are there other special characters for Twitter? Should we use some generic HTML decoding?)
         tweet['text'] = tweet['text'].replace('&lt;', '<')
         tweet['text'] = tweet['text'].replace('&gt;', '>')

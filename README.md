@@ -68,7 +68,7 @@ know the IP addresses where the others are running.
 4) Run it
 ---------
 
-**Read this before you try to run it!** Since June, 2013, the Twitter API required oAuth authentication (the old username/password) method doesn't work any more. Since the source code is open, but out twitter dev accounts are not, the required `consumer_key`, `consumer_secret`, `access_token`, `access_secret` are not included in the source code. Given that scenario, to run *TweetDreams* you will need to get your own twitter dev account, and get these keys and tokens (it is free and easy, just go to [https://dev.twitter.com/](https://dev.twitter.com/) and follow the instructions). Once you get your keys and tokens, you will need to add the to `src/python/twt.py` (search for those terms, defined with empty strings and replace them accordingly).
+**Read this before you try to run it!** Since June, 2013, the Twitter API requires oAuth authentication (the old username/password method doesn't work any more). Since the source code is open, but our twitter dev accounts are not, the required `consumer_key`, `consumer_secret`, `access_token`, `access_secret` are not included in the source code. Given that scenario, to run *TweetDreams* you will need to get your own twitter dev account, and get these keys and tokens (it is free and easy, just go to [https://dev.twitter.com/](https://dev.twitter.com/) and follow the instructions). Once you get your keys and tokens, you will need to add them to `src/python/twt.py` (search for those terms, defined with empty strings and replace them accordingly).
 
 
 ### Run Instructions

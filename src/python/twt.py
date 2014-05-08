@@ -230,7 +230,7 @@ def main():
     common.initial_tweets.start()
 
     # Start the streaming
-    terms = set(sys.argv[4:])
+    terms = set(sys.argv[2:])
 
     consumer_key = ''
     consumer_secret = ''
